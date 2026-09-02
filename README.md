@@ -26,26 +26,14 @@ Risk + MITRE ATT&CK / CAPEC Mapping
 SHAP Explainability
         ↓
 Streamlit Dashboard
+```
 ## Team Structure
 
 | Person | Responsibility |
-|--------|----------------|
+|---|---|
 | P1 | Data Engineering & Preprocessing |
 | P2 | Temporal State & Sequence Engineering |
 | P3 | LSTM World Model |
 | P4 | Attack Forecasting & Cybersecurity Intelligence |
 | P5 | Evaluation & Explainability |
 | P6 | Streamlit Dashboard & Integration |
-
-## Project Structure
-
-```text
-P1_data/
-P2_temporal/
-P3_lstm/
-P4_forecasting/
-P5_evaluation/
-P6_dashboard/
-
-README.md
-requirements.txt
