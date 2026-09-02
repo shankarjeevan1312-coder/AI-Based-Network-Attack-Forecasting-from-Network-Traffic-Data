@@ -4,48 +4,25 @@
 
 This project forecasts future cyberattack progression from network traffic using temporal network states and an LSTM-based world model.
 
-### Core Pipeline
+The system learns how network behavior evolves over time and uses the learned temporal patterns to predict future network states and attack probability.
 
-Raw Network Traffic
-↓
-Data Preprocessing
-↓
-Temporal Network States
-↓
-LSTM World Model
-↓
-Future State Prediction
-↓
-Attack Forecast
-↓
-Risk + MITRE/CAPEC Mapping
-↓
-SHAP Explainability
-↓
-Streamlit Dashboard
-
-## Team Structure
-
-| Person | Responsibility |
-|---|---|
-| P1 | Data Engineering & Preprocessing |
-| P2 | Temporal State & Sequence Engineering |
-| P3 | LSTM World Model |
-| P4 | Attack Forecasting & Cybersecurity Intelligence |
-| P5 | Evaluation & Explainability |
-| P6 | Streamlit Dashboard & Integration |
-
-## Project Structure
+## Core Pipeline
 
 ```text
-P1_data/
-P2_temporal/
-P3_lstm/
-P4_forecasting/
-P5_evaluation/
-P6_dashboard/
-
-data/
-models/
-outputs/
-tests/
+Raw Network Traffic
+        ↓
+Data Preprocessing
+        ↓
+Temporal Network States
+        ↓
+LSTM World Model
+        ↓
+Future State Prediction
+        ↓
+Attack Forecast
+        ↓
+Risk + MITRE ATT&CK / CAPEC Mapping
+        ↓
+SHAP Explainability
+        ↓
+Streamlit Dashboard
