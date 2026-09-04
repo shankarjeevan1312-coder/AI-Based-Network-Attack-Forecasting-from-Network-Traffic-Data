@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-09-04T18:18:18.000354+00:00",
+  "source_asset": "host-workstation-014",
+  "attack_probability": 0.52,
+  "risk_score": 38.57,
+  "risk_level": "MEDIUM",
+  "risk_basis": {
+    "attack_probability_component": 31.2,
+    "indicator_severity_component": 11.42,
+    "model_confidence": 0.81,
+    "indicator_contributions": {
+      "reconnaissance_activity": 0.4,
+      "port_scanning_detected": 0.5,
+      "unusual_login_attempts": 0.48,
+      "lateral_movement_signal": 0.39,
+      "data_exfil_signal": 0.0,
+      "malware_signature_match": 0.0
+    }
+  },
+  "thresholds_used": {
+    "LOW": [
+      0,
+      25
+    ],
+    "MEDIUM": [
+      25,
+      50
+    ],
+    "HIGH": [
+      50,
+      75
+    ],
+    "CRITICAL": [
+      75,
+      100
+    ]
+  },
+  "current_stage": "Reconnaissance",
+  "predicted_stage": "Credential Access",
+  "stage_basis": "derived from mapped MITRE ATT&CK tactics with observed/predicted indicator evidence; null means no indicator in this forecast mapped to a known tactic - it does not mean 'no attack'",
+  "mitre_techniques": {
+    "observed": [
+      {
+        "id": "T1595",
+        "name": "Active Scanning",
+        "tactic": "Reconnaissance",
+        "tactic_id": "TA0043",
+        "basis": "current_state.indicators.reconnaissance_activity = 0.72"
+      },
+      {
+        "id": "T1595.001",
+        "name": "Active Scanning: Scanning IP Blocks",
+        "tactic": "Reconnaissance",
+        "tactic_id": "TA0043",
+        "basis": "current_state.indicators.port_scanning_detected = True"
+      }
+    ],
+    "predicted": [
+      {
+        "id": "T1595",
+        "name": "Active Scanning",
+        "tactic": "Reconnaissance",
+        "tactic_id": "TA0043",
+        "basis": "future_predictions[0].predicted_indicators.reconnaissance_activity = 0.8"
+      },
+      {
+        "id": "T1110",
+        "name": "Brute Force",
+        "tactic": "Credential Access",
+        "tactic_id": "TA0006",
+        "basis": "future_predictions[0].predicted_indicators.unusual_login_attempts = 0.6"
+      }
+    ]
+  },
+  "capec_patterns": [
+    {
+      "id": "CAPEC-300",
+      "name": "Port Scanning",
+      "basis": "mapped from MITRE T1595 (Active Scanning)"
+    },
+    {
+      "id": "CAPEC-300",
+      "name": "Port Scanning",
+      "basis": "mapped from MITRE T1595.001 (Active Scanning: Scanning IP Blocks)"
+    },
+    {
+      "id": "CAPEC-49",
+      "name": "Password Brute Forcing",
+      "basis": "mapped from MITRE T1110 (Brute Force)"
+    },
+    {
+      "id": "CAPEC-560",
+      "name": "Use of Known Domain Credentials",
+      "basis": "mapped from MITRE T1110 (Brute Force)"
+    }
+  ],
+  "forecast": [
+    {
+      "time_offset": "+1h",
+      "attack_probability": 0.52,
+      "risk_score": 38.57,
+      "risk_level": "MEDIUM"
+    },
+    {
+      "time_offset": "+6h",
+      "attack_probability": 0.68,
+      "risk_score": 50.79,
+      "risk_level": "HIGH"
+    },
+    {
+      "time_offset": "+24h",
+      "attack_probability": 0.41,
+      "risk_score": 30.9,
+      "risk_level": "MEDIUM"
+    }
+  ],
+  "vulnerability_context": [
+    {
+      "cve_id": "CVE-2024-3400",
+      "note": "known vulnerability present on this asset class per NVD; included as context only, not evidence of active exploitation"
+    }
+  ],
+  "model_confidence": 0.81,
+  "notes": [
+    "risk thresholds and indicator weights are configurable starting points (see risk_engine.py) and should be tuned against evaluation results before operational use",
+    "mitre_techniques/capec_patterns only include entries backed by an indicator actually present in P3's output - see each entry's 'basis' field",
+    "vulnerability_context (CVE/NVD) is additional context only and is not treated as proof of an active attack"
+  ]
+}
