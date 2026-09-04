@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "model_name": "P3_state_predictor_v1",
+    "generated_at": "2026-09-03T09:00:00Z",
+    "asset_id": "host-workstation-014"
+  },
+  "current_state": {
+    "timestamp": "2026-09-03T09:00:00Z",
+    "indicators": {
+      "reconnaissance_activity": 0.72,
+      "port_scanning_detected": true,
+      "unusual_login_attempts": 0.35,
+      "lateral_movement_signal": 0.05,
+      "data_exfil_signal": 0.0,
+      "malware_signature_match": false
+    },
+    "raw_anomaly_score": 0.58
+  },
+  "future_predictions": [
+    {
+      "time_offset": "+1h",
+      "predicted_probability": 0.52,
+      "predicted_indicators": {
+        "reconnaissance_activity": 0.8,
+        "unusual_login_attempts": 0.6,
+        "lateral_movement_signal": 0.3
+      }
+    },
+    {
+      "time_offset": "+6h",
+      "predicted_probability": 0.68,
+      "predicted_indicators": {
+        "unusual_login_attempts": 0.7,
+        "lateral_movement_signal": 0.55,
+        "data_exfil_signal": 0.15
+      }
+    },
+    {
+      "time_offset": "+24h",
+      "predicted_probability": 0.41,
+      "predicted_indicators": {
+        "lateral_movement_signal": 0.2,
+        "data_exfil_signal": 0.05
+      }
+    }
+  ],
+  "model_confidence": 0.81,
+  "vulnerability_context": [
+    {
+      "cve_id": "CVE-2024-3400",
+      "note": "known vulnerability present on this asset class per NVD; included as context only, not evidence of active exploitation"
+    }
+  ]
+}
