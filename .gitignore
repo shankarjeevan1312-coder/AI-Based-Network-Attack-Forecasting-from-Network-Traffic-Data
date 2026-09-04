@@ -1,0 +1,10 @@
+# Large datasets - do not upload to GitHub
+data/*.csv
+data/**/*.csv
+
+# Python cache
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
