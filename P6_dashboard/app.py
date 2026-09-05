@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import json
 from pathlib import Path
 import streamlit.components.v1 as components
@@ -904,7 +905,26 @@ if data is not None:
     ca, cb = st.columns([2, 1])
     with ca:
         st.markdown("##### 📈 Flow Volume Telemetry")
-        st.area_chart(data[["Packets", "Bytes"]].reset_index(drop=True), use_container_width=True)
+        # Sanitize and prepare data for high MB / large flow files
+        raw_telemetry = data[["Packets", "Bytes"]].replace([np.inf, -np.inf], np.nan).fillna(0)
+        clean_p = pd.to_numeric(raw_telemetry["Packets"], errors="coerce").fillna(0)
+        clean_b = pd.to_numeric(raw_telemetry["Bytes"], errors="coerce").fillna(0)
+        
+        # Adaptive downsampling so high MB files (100k+ rows) render instantly in the browser
+        total_pts = len(clean_p)
+        if total_pts > 250:
+            step = max(1, total_pts // 250)
+            telemetry_plot = pd.DataFrame({
+                "Packets (Rate)": clean_p.iloc[::step].to_numpy(),
+                "Bytes (Volume)": clean_b.iloc[::step].to_numpy()
+            })
+        else:
+            telemetry_plot = pd.DataFrame({
+                "Packets (Rate)": clean_p.to_numpy(),
+                "Bytes (Volume)": clean_b.to_numpy()
+            })
+            
+        st.line_chart(telemetry_plot, use_container_width=True)
     with cb:
         st.markdown("##### 🎯 Threat Ratio Breakdown")
         st.bar_chart(pd.DataFrame({"Category": ["Benign", "Attack"], "Count": [benign, atk]}).set_index("Category"), use_container_width=True)
