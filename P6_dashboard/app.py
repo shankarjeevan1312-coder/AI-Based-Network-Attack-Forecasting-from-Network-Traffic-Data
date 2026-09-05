@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 import pandas as pd
 import json
 from pathlib import Path
@@ -767,9 +767,26 @@ if data is not None and forecast_data is not None:
 
     vuln = forecast_data.get("vulnerability_context", [])
     if vuln:
-        with st.expander("🔒 CVE/NVD Vulnerability Context Feed"):
+        with st.expander("🔒 Interactive CVE/NVD Vulnerability Context Feed (Official NVD Links)", expanded=True):
             for v in vuln:
-                st.markdown(f"**`{v.get('cve_id','')}`** — {v.get('note','')}")
+                cve_id = v.get("cve_id", "N/A")
+                cvss = v.get("cvss", 10.0)
+                severity = v.get("severity", "CRITICAL")
+                url = v.get("url", f"https://nvd.nist.gov/vuln/detail/{cve_id}")
+                note = v.get("note", "")
+
+                st.markdown(f"""
+                <div style="background: rgba(12,12,32,0.8); border: 1px solid rgba(255,23,68,0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <span style="font-family: 'Orbitron', monospace; font-size: 1rem; color: #ff1744; font-weight: 800;">{cve_id}</span>
+                        <span style="background: #ff1744; color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-left: 10px;">{severity} (CVSS {cvss})</span>
+                        <div style="color: #bbb; font-size: 0.88rem; margin-top: 4px;">{note}</div>
+                    </div>
+                    <div style="margin-top: 6px;">
+                        <a href="{url}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #7b2ff7, #00d4ff); color: white; padding: 6px 16px; border-radius: 8px; font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 700; text-decoration: none; box-shadow: 0 0 15px rgba(0,212,255,0.2);">🔗 View on NVD NIST →</a>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 else:
     st.info("Upload traffic data to view threat intelligence mapping.")
 

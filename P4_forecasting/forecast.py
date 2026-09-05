@@ -80,7 +80,7 @@ def load_p3_predictions(path: str) -> dict:
     p = Path(path)
     if not p.exists():
         raise FileNotFoundError(f"P3 predictions file not found: {path}")
-    with p.open("r", encoding="utf-8") as f:
+    with p.open("r", encoding="utf-8-sig") as f:
         data = json.load(f)
     if "current_state" not in data:
         raise ValueError("P3 predictions missing required 'current_state' key")
