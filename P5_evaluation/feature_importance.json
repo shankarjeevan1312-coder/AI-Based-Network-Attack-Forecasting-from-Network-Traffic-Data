@@ -1,0 +1,27 @@
+{
+    "method": "Permutation Feature Importance",
+    "scoring": "accuracy",
+    "baseline_accuracy": 1.0,
+    "features": [
+        {
+            "feature": "Packets",
+            "importance_mean": 0.2833333333333333,
+            "importance_std": 0.10671873729054751
+        },
+        {
+            "feature": "Bytes",
+            "importance_mean": 0.2,
+            "importance_std": 0.10000000000000003
+        },
+        {
+            "feature": "Destination_IP",
+            "importance_mean": 0.0,
+            "importance_std": 0.0
+        },
+        {
+            "feature": "Source_IP",
+            "importance_mean": 0.0,
+            "importance_std": 0.0
+        }
+    ]
+}
