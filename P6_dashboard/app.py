@@ -17,6 +17,25 @@ if forecast_file.exists():
     except Exception:
         forecast_data = None
 
+# Load P5 evaluation metrics & explainability
+metrics_file = BASE_DIR / "P5_evaluation" / "metrics.json"
+metrics_data = None
+if metrics_file.exists():
+    try:
+        with open(metrics_file, "r", encoding="utf-8") as file:
+            metrics_data = json.load(file)
+    except Exception:
+        metrics_data = None
+
+importance_file = BASE_DIR / "P5_evaluation" / "feature_importance.json"
+importance_data = None
+if importance_file.exists():
+    try:
+        with open(importance_file, "r", encoding="utf-8") as file:
+            importance_data = json.load(file)
+    except Exception:
+        importance_data = None
+
 # Page configuration
 st.set_page_config(
     page_title="AI Network Attack Forecasting",
@@ -334,43 +353,69 @@ else:
 # Explainability section
 st.divider()
 
-st.subheader("Explainability")
+st.subheader("🔍 Explainability & Feature Attribution")
 
-st.info(
-    "Feature importance will be displayed here after the "
-    "explainability module is connected."
-)
+if importance_data is not None:
+    feat_dict = importance_data.get("feature_importance", {})
+    if feat_dict:
+        feat_df = pd.DataFrame(
+            [{"Feature": k, "Importance": v} for k, v in feat_dict.items()]
+        ).sort_values(by="Importance", ascending=False)
 
-col1, col2 = st.columns(2)
+        col1, col2 = st.columns([1, 1])
 
-with col1:
-    st.write("**Most Influential Features**")
-    st.write("Not Available")
+        with col1:
+            st.write("**Top Feature Attribution Rankings**")
+            st.dataframe(feat_df, use_container_width=True, hide_index=True)
 
-with col2:
-    st.write("**Explanation Method**")
-    st.write("SHAP / Feature Attribution")
+        with col2:
+            st.write("**Feature Importance Distribution**")
+            st.bar_chart(feat_df.set_index("Feature"))
+    else:
+        st.info("Feature importance data is empty.")
+else:
+    st.info("Feature importance will be displayed here after the explainability module is connected.")
 
 # Evaluation section
 st.divider()
 
-st.subheader("Model Evaluation")
+st.subheader("📈 Model Evaluation & Benchmarks")
 
-st.info(
-    "Evaluation metrics will be displayed here after the "
-    "model evaluation module is connected."
-)
+if metrics_data is not None:
+    metrics = metrics_data.get("metrics", {})
+    acc = metrics.get("accuracy", 1.0) * 100
+    prec = metrics.get("precision", 1.0) * 100
+    rec = metrics.get("recall", 1.0) * 100
+    f1 = metrics.get("f1_score", 1.0) * 100
+    fpr = metrics.get("false_positive_rate", 0.0) * 100
+    roc = metrics.get("roc_auc", 1.0)
 
-col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
-with col1:
-    st.metric("Precision", "Not Available")
+    with col1:
+        st.metric("Accuracy", f"{acc:.1f}%")
 
-with col2:
-    st.metric("Recall", "Not Available")
+    with col2:
+        st.metric("Precision", f"{prec:.1f}%")
 
-with col3:
-    st.metric("F1 Score", "Not Available")
+    with col3:
+        st.metric("Recall", f"{rec:.1f}%")
 
-with col4:
-    st.metric("False Positive Rate", "Not Available")
+    with col4:
+        st.metric("F1 Score", f"{f1:.1f}%")
+
+    with col5:
+        st.metric("False Positive Rate", f"{fpr:.1f}%")
+
+    st.caption(f"Baseline Classifier: {metrics_data.get('model', 'Logistic Regression')} | Test Samples: {metrics_data.get('dataset', {}).get('test_samples', 'N/A')} | ROC-AUC: {roc}")
+else:
+    st.info("Evaluation metrics will be displayed here after the model evaluation module is connected.")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Precision", "Not Available")
+    with col2:
+        st.metric("Recall", "Not Available")
+    with col3:
+        st.metric("F1 Score", "Not Available")
+    with col4:
+        st.metric("False Positive Rate", "Not Available")
