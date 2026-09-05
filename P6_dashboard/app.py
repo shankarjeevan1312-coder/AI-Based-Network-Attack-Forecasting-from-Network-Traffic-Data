@@ -356,10 +356,10 @@ st.divider()
 st.subheader("🔍 Explainability & Feature Attribution")
 
 if importance_data is not None:
-    feat_dict = importance_data.get("feature_importance", {})
-    if feat_dict:
+    features_list = importance_data.get("features", [])
+    if features_list:
         feat_df = pd.DataFrame(
-            [{"Feature": k, "Importance": v} for k, v in feat_dict.items()]
+            [{"Feature": item["feature"], "Importance": round(float(item["importance_mean"]), 4)} for item in features_list]
         ).sort_values(by="Importance", ascending=False)
 
         col1, col2 = st.columns([1, 1])
