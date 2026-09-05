@@ -1,15 +1,15 @@
-import streamlit as st
+﻿import streamlit as st
 import pandas as pd
 import json
 from pathlib import Path
 
-# Load P4 forecast output
+# ============================================================
+# DATA LOADING
+# ============================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 forecast_file = BASE_DIR / "P4_forecasting" / "forecast_output.json"
-
 forecast_data = None
-
 if forecast_file.exists():
     try:
         with open(forecast_file, "r", encoding="utf-8") as file:
@@ -17,7 +17,6 @@ if forecast_file.exists():
     except Exception:
         forecast_data = None
 
-# Load P5 evaluation metrics & explainability
 metrics_file = BASE_DIR / "P5_evaluation" / "metrics.json"
 metrics_data = None
 if metrics_file.exists():
@@ -36,324 +35,383 @@ if importance_file.exists():
     except Exception:
         importance_data = None
 
-# Page configuration
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
 st.set_page_config(
-    page_title="AI Network Attack Forecasting",
+    page_title="AI Network Attack Forecasting | SIH26153",
     page_icon="🛡️",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# Dashboard title
-st.title("🛡️ AI-Based Network Attack Forecasting")
+# ============================================================
+# CUSTOM CSS STYLING
+# ============================================================
+st.markdown("""
+<style>
+    /* Main header styling */
+    .main-header {
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        padding: 2rem 2.5rem;
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #4a4a8a;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .main-header h1 {
+        color: #00d4ff;
+        font-size: 2.2rem;
+        margin-bottom: 0.3rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    .main-header p {
+        color: #a0a0d0;
+        font-size: 1.05rem;
+        margin: 0;
+    }
 
-st.write(
-    "Forecast network attacks from traffic data using temporal AI modelling."
-)
+    /* Risk level badges */
+    .risk-critical { background: #ff1744; color: white; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; }
+    .risk-high { background: #ff6d00; color: white; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; }
+    .risk-medium { background: #ffd600; color: #333; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; }
+    .risk-low { background: #00c853; color: white; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; }
 
-st.divider()
+    /* Card styling */
+    .info-card {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border: 1px solid #2a2a5a;
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+    .info-card h3 { color: #00d4ff; margin-bottom: 0.5rem; font-size: 1rem; }
+    .info-card .value { color: #ffffff; font-size: 1.8rem; font-weight: 700; }
 
-# Upload section
-st.subheader("📁 Upload Network Traffic Data")
+    /* Stage progression */
+    .stage-arrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: linear-gradient(90deg, #1a1a2e, #0d1b2a);
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: 1px solid #2a2a5a;
+    }
+    .stage-box {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .stage-current { background: #1565c0; color: white; }
+    .stage-predicted { background: #c62828; color: white; }
+    .stage-arrow-icon { color: #ff6d00; font-size: 1.5rem; }
+
+    /* Section headers */
+    .section-header {
+        border-left: 4px solid #00d4ff;
+        padding-left: 12px;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    .footer {
+        text-align: center;
+        color: #666;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        border-top: 1px solid #333;
+        font-size: 0.85rem;
+    }
+
+    /* Metric cards enhancement */
+    [data-testid="stMetric"] {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border: 1px solid #2a2a5a;
+        border-radius: 12px;
+        padding: 15px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    [data-testid="stMetricLabel"] {
+        color: #8888bb !important;
+        font-size: 0.85rem !important;
+    }
+    [data-testid="stMetricValue"] {
+        color: #00d4ff !important;
+        font-weight: 700 !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+
+# ============================================================
+# SIDEBAR
+# ============================================================
+with st.sidebar:
+    st.image("https://img.icons8.com/fluency/96/cyber-security.png", width=64)
+    st.markdown("## Navigation")
+    st.markdown("---")
+    st.markdown("**SIH Problem:** `SIH26153`")
+    st.markdown("**Dataset:** CIC-IDS2017")
+    st.markdown("**Model:** LSTM World Model")
+    st.markdown("**Framework:** PyTorch")
+    st.markdown("---")
+    st.markdown("### Knowledge Bases")
+    st.markdown("- MITRE ATT&CK")
+    st.markdown("- CAPEC Patterns")
+    st.markdown("- CVE/NVD Context")
+    st.markdown("---")
+    st.markdown("### Pipeline Phases")
+    st.markdown("1. Data Preprocessing")
+    st.markdown("2. Temporal State Modeling")
+    st.markdown("3. LSTM Deep Learning")
+    st.markdown("4. Threat Forecasting")
+    st.markdown("5. Evaluation & XAI")
+    st.markdown("6. SOC Dashboard")
+    st.markdown("---")
+    st.caption("SIH 2026 | Team Prototype")
+
+
+# ============================================================
+# MAIN HEADER
+# ============================================================
+st.markdown("""
+<div class="main-header">
+    <h1>🛡️ AI-Based Network Attack Forecasting</h1>
+    <p>Proactive Cyber Defense through Temporal Deep Learning &amp; Threat Intelligence | SIH26153</p>
+</div>
+""", unsafe_allow_html=True)
+
+
+# ============================================================
+# DATA UPLOAD
+# ============================================================
+st.markdown('<div class="section-header"><h3>📁 Upload Network Traffic Data</h3></div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
-    "Upload a network traffic CSV file",
-    type=["csv"]
+    "Drag and drop or browse a network traffic CSV file",
+    type=["csv"],
+    help="Required columns: Source_IP, Destination_IP, Packets, Bytes, Label"
 )
 
-# Read and validate uploaded CSV
 data = None
-
-required_columns = [
-    "Source_IP",
-    "Destination_IP",
-    "Packets",
-    "Bytes",
-    "Label"
-]
+required_columns = ["Source_IP", "Destination_IP", "Packets", "Bytes", "Label"]
 
 if uploaded_file is not None:
-
     try:
         uploaded_data = pd.read_csv(uploaded_file)
-
-        missing_columns = [
-            column for column in required_columns
-            if column not in uploaded_data.columns
-        ]
+        missing_columns = [col for col in required_columns if col not in uploaded_data.columns]
 
         if missing_columns:
-
-            st.error("CSV file is missing required columns.")
-
-            st.write(
-                "Missing columns:",
-                missing_columns
-            )
-
-            st.write(
-                "Available columns:",
-                list(uploaded_data.columns)
-            )
-
+            st.error(f"CSV file is missing required columns: {missing_columns}")
+            st.write("Available columns:", list(uploaded_data.columns))
         else:
-
             data = uploaded_data
+            st.success(f"Loaded **{uploaded_file.name}** successfully — {data.shape[0]} rows x {data.shape[1]} columns")
 
-            st.success("CSV file loaded successfully.")
-
-            st.write("File name:", uploaded_file.name)
-
-            st.write("Rows:", data.shape[0])
-            st.write("Columns:", data.shape[1])
-
-            st.subheader("Data Preview")
-            st.dataframe(data.head(10))
-
-            st.subheader("Available Data Fields")
-            st.write(list(data.columns))
+            with st.expander("📋 Preview Raw Data", expanded=False):
+                st.dataframe(data.head(15), use_container_width=True, hide_index=True)
 
     except Exception as e:
-
-        st.error("Unable to read this CSV file.")
-        st.write(e)
-
+        st.error(f"Unable to read CSV: {e}")
 else:
-
     st.info("Upload a CSV file to begin analysis.")
 
-st.divider()
 
-# Overview section
-st.subheader("📊 Network Overview")
-
-col1, col2, col3, col4 = st.columns(4)
+# ============================================================
+# NETWORK OVERVIEW METRICS
+# ============================================================
+st.markdown('<div class="section-header"><h3>📊 Network Overview</h3></div>', unsafe_allow_html=True)
 
 if data is not None:
-
     total_flows = len(data)
     source_ips = data["Source_IP"].nunique()
     destination_ips = data["Destination_IP"].nunique()
-
-    with col1:
-        st.metric("Total Flows", total_flows)
-
-    with col2:
-        st.metric("Source IPs", source_ips)
-
-    with col3:
-        st.metric("Destination IPs", destination_ips)
-
-    with col4:
-        st.metric("Current Risk", "Not Available")
-
-else:
-
-    with col1:
-        st.metric("Total Flows", "—")
-
-    with col2:
-        st.metric("Source IPs", "—")
-
-    with col3:
-        st.metric("Destination IPs", "—")
-
-    with col4:
-        st.metric("Current Risk", "Not Available")
-
-st.divider()
-
-# Traffic Overview
-st.subheader("Traffic Overview")
-
-if data is not None:
-
-    chart_data = data[["Packets", "Bytes"]]
-
-    st.line_chart(chart_data)
-
-else:
-
-    st.info("Upload network traffic data to view the traffic overview.")
-
-# Traffic Summary
-st.subheader("Traffic Summary")
-
-if data is not None:
-
     attack_count = (data["Label"] == "ATTACK").sum()
     normal_count = (data["Label"] == "BENIGN").sum()
+    attack_pct = (attack_count / total_flows * 100) if total_flows > 0 else 0
 
-    total_count = len(data)
+    risk_label = forecast_data.get("risk_level", "N/A") if forecast_data else "N/A"
 
-    if total_count > 0:
-        attack_percentage = (attack_count / total_count) * 100
-    else:
-        attack_percentage = 0
-
-    col1, col2, col3 = st.columns(3)
-
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
-        st.metric("Normal Flows", normal_count)
-
+        st.metric("Total Flows", f"{total_flows:,}")
     with col2:
-        st.metric("Attack Flows", attack_count)
-
+        st.metric("Source IPs", source_ips)
     with col3:
-        st.metric("Attack Percentage", f"{attack_percentage:.1f}%")
+        st.metric("Destination IPs", destination_ips)
+    with col4:
+        st.metric("Attack Flows", f"{attack_count:,}")
+    with col5:
+        st.metric("Attack Ratio", f"{attack_pct:.1f}%")
+
+    st.markdown("---")
+
+    # Traffic visualization
+    col_chart1, col_chart2 = st.columns([2, 1])
+
+    with col_chart1:
+        st.markdown("#### 📈 Traffic Flow Volume")
+        chart_data = data[["Packets", "Bytes"]].reset_index(drop=True)
+        st.area_chart(chart_data, use_container_width=True)
+
+    with col_chart2:
+        st.markdown("#### 🎯 Traffic Distribution")
+        dist_df = pd.DataFrame({
+            "Category": ["BENIGN", "ATTACK"],
+            "Count": [normal_count, attack_count]
+        })
+        st.bar_chart(dist_df.set_index("Category"), use_container_width=True)
 
 else:
+    col1, col2, col3, col4, col5 = st.columns(5)
+    with col1:
+        st.metric("Total Flows", "—")
+    with col2:
+        st.metric("Source IPs", "—")
+    with col3:
+        st.metric("Destination IPs", "—")
+    with col4:
+        st.metric("Attack Flows", "—")
+    with col5:
+        st.metric("Attack Ratio", "—")
+    st.info("Upload network traffic data to view the network overview.")
 
-    st.info("Upload network traffic data to view the traffic summary.")
 
-# Forecast section
-st.subheader("Attack Forecast")
+# ============================================================
+# ATTACK FORECAST & RISK ASSESSMENT
+# ============================================================
+st.markdown('<div class="section-header"><h3>🔮 Attack Forecast & Risk Assessment</h3></div>', unsafe_allow_html=True)
 
 if data is not None and forecast_data is not None:
-
     attack_probability = forecast_data.get("attack_probability", 0)
     risk_score = forecast_data.get("risk_score", 0)
-    risk_level = forecast_data.get("risk_level", "Not Available")
-    current_stage = forecast_data.get("current_stage", "Not Available")
-    predicted_stage = forecast_data.get("predicted_stage", "Not Available")
+    risk_level = forecast_data.get("risk_level", "N/A")
+    current_stage = forecast_data.get("current_stage", "N/A")
+    predicted_stage = forecast_data.get("predicted_stage", "N/A")
+    model_conf = forecast_data.get("model_confidence", 0)
 
-    col1, col2, col3 = st.columns(3)
+    # Risk color mapping
+    risk_colors = {"CRITICAL": "risk-critical", "HIGH": "risk-high", "MEDIUM": "risk-medium", "LOW": "risk-low"}
+    risk_class = risk_colors.get(risk_level, "risk-medium")
 
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Current Risk", risk_level)
-
+        st.metric("Risk Score", f"{risk_score:.1f} / 100")
     with col2:
-        st.metric("Predicted Stage", predicted_stage)
-
+        st.markdown(f'**Risk Level:** <span class="{risk_class}">{risk_level}</span>', unsafe_allow_html=True)
     with col3:
-        st.metric(
-            "Attack Probability",
-            f"{attack_probability * 100:.0f}%"
-        )
+        st.metric("Attack Probability", f"{attack_probability * 100:.0f}%")
+    with col4:
+        st.metric("Model Confidence", f"{model_conf * 100:.0f}%")
 
-    st.write(f"**Risk Score:** {risk_score:.2f}")
+    # Attack stage progression
+    st.markdown("#### ⚔️ Attack Stage Progression")
+    st.markdown(f"""
+    <div class="stage-arrow">
+        <span class="stage-box stage-current">📍 Current: {current_stage}</span>
+        <span class="stage-arrow-icon">➡️</span>
+        <span class="stage-box stage-predicted">🎯 Predicted: {predicted_stage}</span>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.write(f"**Current Stage:** {current_stage}")
+    st.markdown("")
 
-elif data is None:
-
-    st.info("Upload a network traffic CSV file to view the attack forecast.")
-
-else:
-
-    st.warning("Forecast data is not available.")
-
-# Forecast Timeline
-st.subheader("Forecast Timeline")
-
-if data is not None and forecast_data is not None:
-
+    # Forecast Timeline
+    st.markdown("#### 📅 Multi-Horizon Forecast Timeline")
     forecast = forecast_data.get("forecast", [])
 
     if forecast:
-
-        forecast_table = []
-
+        timeline_data = []
         for item in forecast:
-            forecast_table.append({
-                "Time": item.get("time_offset", "N/A"),
-                "Attack Probability": f"{item.get('attack_probability', 0) * 100:.0f}%",
-                "Risk Score": item.get("risk_score", "N/A"),
-                "Risk Level": item.get("risk_level", "N/A")
+            prob = item.get("attack_probability", 0)
+            rs = item.get("risk_score", 0)
+            rl = item.get("risk_level", "N/A")
+            risk_cls = risk_colors.get(rl, "risk-medium")
+            timeline_data.append({
+                "Horizon": item.get("time_offset", "N/A"),
+                "Attack Probability": f"{prob * 100:.0f}%",
+                "Risk Score": f"{rs:.1f}",
+                "Risk Level": rl
             })
 
         st.dataframe(
-            pd.DataFrame(forecast_table),
+            pd.DataFrame(timeline_data),
             use_container_width=True,
             hide_index=True
         )
 
-    else:
-        st.info("No forecast timeline available.")
+        # Timeline chart
+        timeline_chart = pd.DataFrame([
+            {"Horizon": item.get("time_offset", ""), "Risk Score": item.get("risk_score", 0), "Attack %": item.get("attack_probability", 0) * 100}
+            for item in forecast
+        ]).set_index("Horizon")
+        st.line_chart(timeline_chart, use_container_width=True)
 
 elif data is None:
-
-    st.info("Upload a network traffic CSV file to view the forecast timeline.")
-
+    st.info("Upload a network traffic CSV file to view the attack forecast.")
 else:
+    st.warning("Forecast data is not available.")
 
-    st.warning("Forecast timeline data is not available.")
 
-# MITRE ATT&CK section
-st.divider()
-
-st.subheader("MITRE ATT&CK Mapping")
+# ============================================================
+# MITRE ATT&CK & CAPEC MAPPING
+# ============================================================
+st.markdown('<div class="section-header"><h3>🗺️ MITRE ATT&CK & CAPEC Threat Mapping</h3></div>', unsafe_allow_html=True)
 
 if data is not None and forecast_data is not None:
-
     mitre_data = forecast_data.get("mitre_techniques", {})
-
     observed_techniques = mitre_data.get("observed", [])
     predicted_techniques = mitre_data.get("predicted", [])
+    capec_patterns = forecast_data.get("capec_patterns", [])
 
-    col1, col2 = st.columns(2)
+    tab1, tab2, tab3 = st.tabs(["🔍 Observed Techniques", "🎯 Predicted Techniques", "📋 CAPEC Patterns"])
 
-    with col1:
-        st.write("**Current Stage**")
-        st.write(forecast_data.get("current_stage", "Not Available"))
+    with tab1:
+        if observed_techniques:
+            obs_df = pd.DataFrame([{
+                "ID": t.get("id", ""), "Technique": t.get("name", ""), "Tactic": t.get("tactic", ""), "Basis": t.get("basis", "")
+            } for t in observed_techniques])
+            st.dataframe(obs_df, use_container_width=True, hide_index=True)
+        else:
+            st.info("No observed MITRE techniques.")
 
-    with col2:
-        st.write("**Predicted Stage**")
-        st.write(forecast_data.get("predicted_stage", "Not Available"))
+    with tab2:
+        if predicted_techniques:
+            pred_df = pd.DataFrame([{
+                "ID": t.get("id", ""), "Technique": t.get("name", ""), "Tactic": t.get("tactic", ""), "Basis": t.get("basis", "")
+            } for t in predicted_techniques])
+            st.dataframe(pred_df, use_container_width=True, hide_index=True)
+        else:
+            st.info("No predicted MITRE techniques.")
 
-    st.write("### Observed Techniques")
+    with tab3:
+        if capec_patterns:
+            capec_df = pd.DataFrame([{
+                "ID": c.get("id", ""), "Pattern": c.get("name", ""), "Basis": c.get("basis", "")
+            } for c in capec_patterns])
+            st.dataframe(capec_df, use_container_width=True, hide_index=True)
+        else:
+            st.info("No CAPEC patterns mapped.")
 
-    if observed_techniques:
-
-        observed_table = []
-
-        for item in observed_techniques:
-            observed_table.append({
-                "Technique ID": item.get("id", "N/A"),
-                "Technique": item.get("name", "N/A"),
-                "Tactic": item.get("tactic", "N/A")
-            })
-
-        st.dataframe(
-            pd.DataFrame(observed_table),
-            use_container_width=True,
-            hide_index=True
-        )
-
-    else:
-        st.info("No observed MITRE techniques available.")
-
-    st.write("### Predicted Techniques")
-
-    if predicted_techniques:
-
-        predicted_table = []
-
-        for item in predicted_techniques:
-            predicted_table.append({
-                "Technique ID": item.get("id", "N/A"),
-                "Technique": item.get("name", "N/A"),
-                "Tactic": item.get("tactic", "N/A")
-            })
-
-        st.dataframe(
-            pd.DataFrame(predicted_table),
-            use_container_width=True,
-            hide_index=True
-        )
-
-    else:
-        st.info("No predicted MITRE techniques available.")
+    # Vulnerability context
+    vuln_context = forecast_data.get("vulnerability_context", [])
+    if vuln_context:
+        with st.expander("🔒 CVE/NVD Vulnerability Context", expanded=False):
+            for vuln in vuln_context:
+                st.markdown(f"**{vuln.get('cve_id', 'N/A')}**: {vuln.get('note', '')}")
 
 else:
+    st.info("Upload a network traffic CSV file to view MITRE ATT&CK mapping.")
 
-    st.info(
-        "Upload a network traffic CSV file to view MITRE ATT&CK mapping."
-    )
 
-# Explainability section
-st.divider()
-
-st.subheader("🔍 Explainability & Feature Attribution")
+# ============================================================
+# EXPLAINABILITY & FEATURE ATTRIBUTION
+# ============================================================
+st.markdown('<div class="section-header"><h3>🔬 Explainability & Feature Attribution</h3></div>', unsafe_allow_html=True)
 
 if importance_data is not None:
     features_list = importance_data.get("features", [])
@@ -365,21 +423,23 @@ if importance_data is not None:
         col1, col2 = st.columns([1, 1])
 
         with col1:
-            st.write("**Top Feature Attribution Rankings**")
+            st.markdown("#### Top Feature Attribution Rankings")
             st.dataframe(feat_df, use_container_width=True, hide_index=True)
+            st.caption(f"Method: {importance_data.get('method', 'Permutation Feature Importance')} | Scoring: {importance_data.get('scoring', 'accuracy')}")
 
         with col2:
-            st.write("**Feature Importance Distribution**")
-            st.bar_chart(feat_df.set_index("Feature"))
+            st.markdown("#### Feature Importance Distribution")
+            st.bar_chart(feat_df.set_index("Feature"), use_container_width=True)
     else:
         st.info("Feature importance data is empty.")
 else:
-    st.info("Feature importance will be displayed here after the explainability module is connected.")
+    st.info("Feature importance will be displayed after the explainability module is connected.")
 
-# Evaluation section
-st.divider()
 
-st.subheader("📈 Model Evaluation & Benchmarks")
+# ============================================================
+# MODEL EVALUATION & BENCHMARKS
+# ============================================================
+st.markdown('<div class="section-header"><h3>📈 Model Evaluation & Performance Benchmarks</h3></div>', unsafe_allow_html=True)
 
 if metrics_data is not None:
     metrics = metrics_data.get("metrics", {})
@@ -391,31 +451,46 @@ if metrics_data is not None:
     roc = metrics.get("roc_auc", 1.0)
 
     col1, col2, col3, col4, col5 = st.columns(5)
-
     with col1:
         st.metric("Accuracy", f"{acc:.1f}%")
-
     with col2:
         st.metric("Precision", f"{prec:.1f}%")
-
     with col3:
         st.metric("Recall", f"{rec:.1f}%")
-
     with col4:
         st.metric("F1 Score", f"{f1:.1f}%")
-
     with col5:
-        st.metric("False Positive Rate", f"{fpr:.1f}%")
+        st.metric("FPR", f"{fpr:.1f}%")
 
-    st.caption(f"Baseline Classifier: {metrics_data.get('model', 'Logistic Regression')} | Test Samples: {metrics_data.get('dataset', {}).get('test_samples', 'N/A')} | ROC-AUC: {roc}")
+    st.caption(f"Baseline: {metrics_data.get('model', 'Logistic Regression')} | Test Samples: {metrics_data.get('dataset', {}).get('test_samples', 'N/A')} | ROC-AUC: {roc}")
+
+    # Performance comparison chart
+    perf_df = pd.DataFrame({
+        "Metric": ["Accuracy", "Precision", "Recall", "F1 Score"],
+        "Score (%)": [acc, prec, rec, f1]
+    }).set_index("Metric")
+    st.bar_chart(perf_df, use_container_width=True)
+
 else:
-    st.info("Evaluation metrics will be displayed here after the model evaluation module is connected.")
+    st.info("Evaluation metrics will be displayed after the model evaluation module is connected.")
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Precision", "Not Available")
+        st.metric("Precision", "—")
     with col2:
-        st.metric("Recall", "Not Available")
+        st.metric("Recall", "—")
     with col3:
-        st.metric("F1 Score", "Not Available")
+        st.metric("F1 Score", "—")
     with col4:
-        st.metric("False Positive Rate", "Not Available")
+        st.metric("FPR", "—")
+
+
+# ============================================================
+# FOOTER
+# ============================================================
+st.markdown("""
+<div class="footer">
+    <strong>AI-Based Network Attack Forecasting from Network Traffic Data</strong><br>
+    SIH 2026 | Problem Statement: SIH26153 | Dataset: CIC-IDS2017 | Model: PyTorch LSTM World Model<br>
+    Knowledge Bases: MITRE ATT&CK | CAPEC | CVE/NVD
+</div>
+""", unsafe_allow_html=True)
