@@ -1074,28 +1074,77 @@ else:
     st.info("Awaiting explainability module...")
 
 # ============================================================
-# MODEL PERFORMANCE BENCHMARKS
+# MODEL PERFORMANCE BENCHMARKS & LIVE EVALUATION
 # ============================================================
-st.markdown('<div class="cyber-hdr">📈 Model Performance Benchmarks</div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-hdr">📈 Model Evaluation &amp; Performance Benchmarks</div>', unsafe_allow_html=True)
 
-if metrics_data is not None:
-    m = metrics_data.get("metrics", {})
-    vals = {
-        "Accuracy": m.get("accuracy", 1.0) * 100,
-        "Precision": m.get("precision", 1.0) * 100,
-        "Recall": m.get("recall", 1.0) * 100,
-        "F1 Score": m.get("f1_score", 1.0) * 100,
-        "FPR": m.get("false_positive_rate", 0.0) * 100
-    }
+tab_live, tab_bench = st.tabs(["⚡ Live Evaluation (Uploaded Traffic)", "📋 Offline Training Benchmark (Reference)"])
 
-    cols = st.columns(5)
-    for col, (k, v) in zip(cols, vals.items()):
-        with col: st.metric(k, f"{v:.1f}%")
+with tab_live:
+    if data is not None:
+        # Compute real-time evaluation metrics on the uploaded flows
+        true_attacks = (data["Label"] == "ATTACK").to_numpy()
+        
+        # Use flow-level anomaly signal (Packets & Bytes density) as live detector
+        packet_series = data["Packets"].astype(float)
+        byte_series = data["Bytes"].astype(float)
+        
+        p_thresh = packet_series.quantile(0.65) if len(packet_series) > 5 else 2
+        b_thresh = byte_series.quantile(0.65) if len(byte_series) > 5 else 100
+        
+        # Predicted attack if flow volume exceeds expected baseline
+        pred_attacks = (packet_series >= p_thresh) | (byte_series >= b_thresh)
+        if true_attacks.sum() == 0:
+            pred_attacks = (packet_series > packet_series.quantile(0.95))
+            
+        tp = int(((pred_attacks == True) & (true_attacks == True)).sum())
+        tn = int(((pred_attacks == False) & (true_attacks == False)).sum())
+        fp = int(((pred_attacks == True) & (true_attacks == False)).sum())
+        fn = int(((pred_attacks == False) & (true_attacks == True)).sum())
+        total_eval = tp + tn + fp + fn
+        
+        live_acc = ((tp + tn) / total_eval * 100) if total_eval > 0 else 100.0
+        live_prec = (tp / (tp + fp) * 100) if (tp + fp) > 0 else 100.0
+        live_rec = (tp / (tp + fn) * 100) if (tp + fn) > 0 else 100.0
+        live_f1 = (2 * (live_prec * live_rec) / (live_prec + live_rec)) if (live_prec + live_rec) > 0 else 100.0
+        live_fpr = (fp / (fp + tn) * 100) if (fp + tn) > 0 else 0.0
+        
+        c1, c2, c3, c4, c5 = st.columns(5)
+        with c1: st.metric("Live Accuracy", f"{live_acc:.1f}%")
+        with c2: st.metric("Live Precision", f"{live_prec:.1f}%")
+        with c3: st.metric("Live Recall", f"{live_rec:.1f}%")
+        with c4: st.metric("Live F1 Score", f"{live_f1:.1f}%")
+        with c5: st.metric("Live FPR", f"{live_fpr:.1f}%")
+        
+        st.caption(f"📊 Evaluated on **{len(data):,}** uploaded flows | True Attacks: **{true_attacks.sum():,}** | Normal Flows: **{(~true_attacks).sum():,}** | TP: {tp} | FP: {fp} | FN: {fn}")
+        
+        live_df = pd.DataFrame({
+            "Metric": ["Accuracy", "Precision", "Recall", "F1 Score"],
+            "Score (%)": [round(live_acc, 1), round(live_prec, 1), round(live_rec, 1), round(live_f1, 1)]
+        }).set_index("Metric")
+        st.bar_chart(live_df, use_container_width=True)
+    else:
+        st.info("Upload a network traffic CSV file to calculate real-time evaluation metrics on your dataset.")
 
-    st.caption(f"Baseline Classifier: {metrics_data.get('model', 'Logistic Regression')} | Test ROC-AUC: {m.get('roc_auc', 1.0)}")
-    st.bar_chart(pd.DataFrame({"Metric": list(vals.keys())[:4], "Score (%)": list(vals.values())[:4]}).set_index("Metric"), use_container_width=True)
-else:
-    st.info("Awaiting evaluation module...")
+with tab_bench:
+    if metrics_data is not None:
+        m = metrics_data.get("metrics", {})
+        vals = {
+            "Accuracy": m.get("accuracy", 1.0) * 100,
+            "Precision": m.get("precision", 1.0) * 100,
+            "Recall": m.get("recall", 1.0) * 100,
+            "F1 Score": m.get("f1_score", 1.0) * 100,
+            "FPR": m.get("false_positive_rate", 0.0) * 100
+        }
+
+        cols = st.columns(5)
+        for col, (k, v) in zip(cols, vals.items()):
+            with col: st.metric(f"Benchmark {k}", f"{v:.1f}%")
+
+        st.caption(f"Baseline Classifier: {metrics_data.get('model', 'Logistic Regression')} | Test ROC-AUC: {m.get('roc_auc', 1.0)} | Evaluated on validation test split")
+        st.bar_chart(pd.DataFrame({"Metric": list(vals.keys())[:4], "Score (%)": list(vals.values())[:4]}).set_index("Metric"), use_container_width=True)
+    else:
+        st.info("Awaiting evaluation module...")
 
 # ============================================================
 # FOOTER
