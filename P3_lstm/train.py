@@ -1,4 +1,4 @@
-import json
+﻿import json
 import random
 from pathlib import Path
 
@@ -151,7 +151,7 @@ print("Validation samples:", len(X_val))
 print("Testing samples:", len(X_test))
 
 print("\nSplit order:")
-print("TRAIN → VALIDATION → TEST")
+print("TRAIN â†’ VALIDATION â†’ TEST")
 
 # Safety check: no random splitting
 assert len(X_train) + len(X_val) + len(X_test) == number_of_samples
@@ -606,6 +606,6 @@ print("\nTraining results saved to:")
 print(RESULTS_FILE)
 
 print("\nAttack probability training:")
-print("NOT TRAINED — no attack labels available.")
+print("NOT TRAINED â€” no attack labels available.")
 
 print("=" * 70)
