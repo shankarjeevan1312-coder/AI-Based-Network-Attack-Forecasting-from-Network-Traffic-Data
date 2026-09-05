@@ -47,7 +47,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# THREE.JS 3D CANVAS INJECTION
+# THREE.JS 3D CANVAS (LIGHT & VIBRANT)
 # ============================================================
 threejs_canvas_html = """
 <!DOCTYPE html>
@@ -66,7 +66,7 @@ threejs_canvas_html = """
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 24;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -77,30 +77,30 @@ threejs_canvas_html = """
     const worldGroup = new THREE.Group();
     scene.add(worldGroup);
 
-    // 1. macOS Glass 3D Sphere Mesh
-    const sphereGeo = new THREE.IcosahedronGeometry(8.5, 3);
+    // 1. Sleek Azure Blue 3D Sphere Mesh
+    const sphereGeo = new THREE.IcosahedronGeometry(8.2, 3);
     const sphereMat = new THREE.MeshBasicMaterial({
-        color: 0x007AFF,
+        color: 0x0071e3,
         wireframe: true,
         transparent: true,
-        opacity: 0.18
+        opacity: 0.35
     });
     const cyberSphere = new THREE.Mesh(sphereGeo, sphereMat);
     worldGroup.add(cyberSphere);
 
-    // 2. Inner Purple Core
-    const innerGeo = new THREE.IcosahedronGeometry(5.5, 2);
+    // 2. Inner Purple Crystal Core
+    const innerGeo = new THREE.IcosahedronGeometry(5.2, 2);
     const innerMat = new THREE.MeshBasicMaterial({
-        color: 0x5E5CE6,
+        color: 0x6e56cf,
         wireframe: true,
         transparent: true,
-        opacity: 0.28
+        opacity: 0.45
     });
     const innerSphere = new THREE.Mesh(innerGeo, innerMat);
     worldGroup.add(innerSphere);
 
-    // 3. Floating Ambient Particles
-    const particlesCount = 550;
+    // 3. Floating Ambient Azure & Coral Particles
+    const particlesCount = 450;
     const posArray = new Float32Array(particlesCount * 3);
     for(let i=0; i<particlesCount*3; i++) {
         posArray[i] = (Math.random() - 0.5) * 55;
@@ -109,11 +109,10 @@ threejs_canvas_html = """
     particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
     const particlesMat = new THREE.PointsMaterial({
-        size: 0.15,
-        color: 0x64D2FF,
+        size: 0.16,
+        color: 0x0071e3,
         transparent: true,
-        opacity: 0.6,
-        blending: THREE.AdditiveBlending
+        opacity: 0.55
     });
     const particleSystem = new THREE.Points(particlesGeo, particlesMat);
     worldGroup.add(particleSystem);
@@ -135,13 +134,13 @@ threejs_canvas_html = """
     function animate() {
         requestAnimationFrame(animate);
 
-        cyberSphere.rotation.y += 0.0018;
-        cyberSphere.rotation.x += 0.0008;
+        cyberSphere.rotation.y += 0.002;
+        cyberSphere.rotation.x += 0.001;
         
-        innerSphere.rotation.y -= 0.0025;
-        innerSphere.rotation.z += 0.0012;
+        innerSphere.rotation.y -= 0.0028;
+        innerSphere.rotation.z += 0.0014;
 
-        particleSystem.rotation.y += 0.0006;
+        particleSystem.rotation.y += 0.0007;
 
         targetX += (mouseX - targetX) * 0.05;
         targetY += (mouseY - targetY) * 0.05;
@@ -157,49 +156,52 @@ threejs_canvas_html = """
 </html>
 """
 
-components.html(threejs_canvas_html, height=240, scrolling=False)
-
+components.html(threejs_canvas_html, height=230, scrolling=False)
 
 # ============================================================
-# macOS MAJESTIC GLASSMORPHISM & CLEAN TYPOGRAPHY STYLES
+# macOS LIGHT GLASSMORPHISM (WARM & HEARTWARMING APPLE THEME)
 # ============================================================
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ===== macOS DARK MODE BASE ===== */
+/* ===== APPLE LIGHT MODE CANVAS ===== */
 .stApp {
-    background: #000000 !important;
-    background-image:
-        radial-gradient(at 15% 15%, rgba(0, 122, 255, 0.06) 0px, transparent 50%),
-        radial-gradient(at 85% 85%, rgba(94, 92, 230, 0.06) 0px, transparent 50%),
-        radial-gradient(at 50% 50%, rgba(48, 209, 88, 0.03) 0px, transparent 50%);
+    background: #fbfbfd !important;
+    background-image: 
+        radial-gradient(at 10% 10%, rgba(224, 242, 254, 0.7) 0px, transparent 60%),
+        radial-gradient(at 90% 15%, rgba(243, 232, 255, 0.6) 0px, transparent 55%),
+        radial-gradient(at 50% 85%, rgba(254, 242, 242, 0.6) 0px, transparent 60%),
+        radial-gradient(at 85% 80%, rgba(220, 252, 231, 0.5) 0px, transparent 50%) !important;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif !important;
-    color: #f5f5f7 !important;
+    color: #1d1d1f !important;
 }
 
-/* ===== macOS WINDOW CONTAINER ===== */
-.macos-window {
-    background: rgba(28, 28, 30, 0.65);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
-    padding: 1.8rem 2.2rem;
-    margin-bottom: 1.6rem;
-    box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    position: relative;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+/* Base text elements */
+p, span, label, div {
+    color: #1d1d1f;
 }
-.macos-window:hover {
-    border-color: rgba(255, 255, 255, 0.22);
-    box-shadow:
-        0 30px 70px rgba(0, 0, 0, 0.5),
-        0 0 40px rgba(0, 122, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+/* ===== HERO WINDOW (APPLE GLASS CARD) ===== */
+.hero-window {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    border-radius: 24px !important;
+    padding: 2.6rem 3rem !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.04),
+        0 1px 3px rgba(0, 0, 0, 0.02),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-window:hover {
     transform: translateY(-2px);
+    box-shadow: 
+        0 26px 50px rgba(0, 113, 227, 0.08),
+        0 1px 4px rgba(0, 0, 0, 0.03) !important;
 }
 
 /* macOS Window Control Dots */
@@ -215,156 +217,148 @@ st.markdown("""
     border-radius: 50%;
     display: inline-block;
 }
-.dot-red { background: #FF5F56; border: 0.5px solid #E0443E; }
-.dot-yellow { background: #FFBD2E; border: 0.5px solid #DEA123; }
-.dot-green { background: #27C93F; border: 0.5px solid #1AAB29; }
+.dot-red { background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
+.dot-yellow { background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
+.dot-green { background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
 .window-title {
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.45);
+    color: #86868b;
     font-weight: 500;
     margin-left: 6px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.2px;
 }
 
-/* ===== HERO WINDOW ===== */
-.hero-window {
-    background: linear-gradient(135deg, rgba(30, 30, 35, 0.75), rgba(15, 15, 20, 0.85));
-    backdrop-filter: blur(50px);
-    -webkit-backdrop-filter: blur(50px);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 24px;
-    padding: 2.8rem 3.2rem;
-    margin-bottom: 2.2rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.6),
-        0 0 60px rgba(0, 122, 255, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
 .hero-title {
-    font-size: 2.5rem;
+    font-size: 2.4rem;
     font-weight: 700;
-    letter-spacing: -0.5px;
-    color: #ffffff;
+    letter-spacing: -0.8px;
+    color: #1d1d1f;
     margin-bottom: 0.4rem;
 }
 .hero-sub {
     font-size: 1.05rem;
-    color: rgba(235, 235, 245, 0.6);
+    color: #515154;
     font-weight: 400;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.1px;
 }
 .hero-tag {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(0, 122, 255, 0.12);
-    border: 1px solid rgba(0, 122, 255, 0.3);
-    color: #64D2FF;
+    background: rgba(0, 113, 227, 0.08);
+    border: 1px solid rgba(0, 113, 227, 0.2);
+    color: #0071e3;
     padding: 6px 16px;
     border-radius: 30px;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    margin-top: 1.2rem;
+    margin-top: 1.1rem;
 }
 
 /* ===== SECTION HEADERS ===== */
 .section-lbl {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    color: #ffffff;
-    margin: 2.2rem 0 1.2rem 0;
+    color: #1d1d1f;
+    margin: 2.2rem 0 1rem 0;
     display: flex;
     align-items: center;
     gap: 10px;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.4px;
 }
 
-/* ===== METRICS CARDS ===== */
+/* ===== METRICS CARDS (WHITE FROSTED GLASS) ===== */
 [data-testid="stMetric"] {
-    background: rgba(36, 36, 40, 0.6) !important;
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 16px !important;
-    padding: 20px 22px !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    border-radius: 18px !important;
+    padding: 18px 22px !important;
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.03),
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 [data-testid="stMetric"]:hover {
-    transform: translateY(-3px) !important;
-    border-color: rgba(0, 122, 255, 0.4) !important;
-    box-shadow: 0 18px 45px rgba(0,0,0,0.4), 0 0 30px rgba(0, 122, 255, 0.12) !important;
+    transform: translateY(-2px) !important;
+    border-color: rgba(0, 113, 227, 0.35) !important;
+    box-shadow: 
+        0 16px 35px rgba(0, 113, 227, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.02) !important;
 }
 [data-testid="stMetricLabel"] {
-    color: rgba(235, 235, 245, 0.55) !important;
+    color: #6e6e73 !important;
     font-size: 0.82rem !important;
     font-weight: 500 !important;
-    letter-spacing: 0.2px !important;
+    letter-spacing: 0.1px !important;
 }
 [data-testid="stMetricValue"] {
-    color: #ffffff !important;
+    color: #1d1d1f !important;
     font-weight: 700 !important;
-    font-size: 1.7rem !important;
+    font-size: 1.75rem !important;
     letter-spacing: -0.5px !important;
 }
 
-/* ===== RISK GAUGE BOX ===== */
+/* ===== RISK GAUGE CARDS (WARM GLASS) ===== */
 .risk-card-macos {
-    background: rgba(30, 30, 35, 0.65);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 18px;
-    padding: 2rem;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 1.8rem;
     text-align: center;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+    box-shadow: 
+        0 14px 30px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.02);
     transition: all 0.3s;
 }
 .risk-card-macos:hover {
-    transform: translateY(-3px);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.07);
 }
 .risk-num-macos {
-    font-size: 3.8rem;
+    font-size: 3.6rem;
     font-weight: 700;
     line-height: 1;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
 }
 .risk-sub-macos {
-    color: rgba(235, 235, 245, 0.5);
+    color: #6e6e73;
     font-size: 0.8rem;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 0.5rem;
+    letter-spacing: 0.8px;
+    margin-top: 0.4rem;
 }
 
-/* ===== BADGES ===== */
+/* ===== ACCENT BADGES (WARM & REFINED) ===== */
 .macos-badge {
     display: inline-block;
-    padding: 8px 24px;
+    padding: 6px 20px;
     border-radius: 20px;
     font-weight: 600;
     font-size: 0.95rem;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
 }
-.badge-crit { background: rgba(255, 69, 58, 0.2); color: #FF453A; border: 1px solid rgba(255, 69, 58, 0.4); }
-.badge-hgh { background: rgba(255, 159, 10, 0.2); color: #FF9F0C; border: 1px solid rgba(255, 159, 10, 0.4); }
-.badge-med { background: rgba(255, 214, 10, 0.2); color: #FFD60A; border: 1px solid rgba(255, 214, 10, 0.4); }
-.badge-low { background: rgba(48, 209, 88, 0.2); color: #30D158; border: 1px solid rgba(48, 209, 88, 0.4); }
+.badge-crit { background: rgba(255, 59, 48, 0.12); color: #d70015; border: 1px solid rgba(255, 59, 48, 0.25); }
+.badge-hgh { background: rgba(255, 149, 0, 0.12); color: #c93400; border: 1px solid rgba(255, 149, 0, 0.25); }
+.badge-med { background: rgba(255, 204, 0, 0.16); color: #a05a00; border: 1px solid rgba(255, 204, 0, 0.3); }
+.badge-low { background: rgba(52, 199, 89, 0.12); color: #1a883a; border: 1px solid rgba(52, 199, 89, 0.25); }
 
 /* ===== STAGE FLOW ===== */
 .macos-flow {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    background: rgba(30, 30, 35, 0.6);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: 18px;
-    padding: 20px 30px;
+    padding: 18px 28px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
     flex-wrap: wrap;
 }
 .flow-chip {
@@ -373,40 +367,61 @@ st.markdown("""
     font-size: 0.95rem;
     font-weight: 600;
 }
-.chip-curr { background: rgba(0, 122, 255, 0.2); color: #64D2FF; border: 1px solid rgba(0, 122, 255, 0.4); }
-.chip-pred { background: rgba(255, 69, 58, 0.2); color: #FF453A; border: 1px solid rgba(255, 69, 58, 0.4); }
-.chip-arrow { color: rgba(235, 235, 245, 0.4); font-size: 1.2rem; }
+.chip-curr { background: rgba(0, 113, 227, 0.1); color: #0071e3; border: 1px solid rgba(0, 113, 227, 0.25); }
+.chip-pred { background: rgba(255, 59, 48, 0.1); color: #d70015; border: 1px solid rgba(255, 59, 48, 0.25); }
+.chip-arrow { color: #86868b; font-size: 1.2rem; font-weight: 600; }
 
 /* ===== TABS & TABLES ===== */
-.stTabs [data-baseweb="tab-list"] { gap: 10px; }
+.stTabs [data-baseweb="tab-list"] { gap: 8px; }
 .stTabs [data-baseweb="tab"] {
-    background: rgba(36, 36, 40, 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 12px;
-    color: rgba(235, 235, 245, 0.6);
+    color: #515154;
     font-size: 0.9rem;
     font-weight: 500;
-    padding: 8px 20px;
-    transition: all 0.25s;
+    padding: 8px 18px;
+    transition: all 0.2s;
 }
 .stTabs [aria-selected="true"] {
-    background: rgba(0, 122, 255, 0.25) !important;
+    background: #0071e3 !important;
     color: #ffffff !important;
-    border-color: rgba(0, 122, 255, 0.5) !important;
+    border-color: #0071e3 !important;
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
 }
 
 [data-testid="stDataFrame"] {
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
     overflow: hidden;
+}
+
+/* ===== FILE UPLOADER ===== */
+[data-testid="stFileUploader"] {
+    background: rgba(255, 255, 255, 0.75) !important;
+    border: 2px dashed rgba(0, 113, 227, 0.25) !important;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+}
+
+/* ===== EXPANDER ===== */
+.streamlit-expanderHeader {
+    background: rgba(255, 255, 255, 0.75) !important;
+    border-radius: 12px !important;
+    color: #1d1d1f !important;
+    font-weight: 600 !important;
 }
 
 /* ===== SIDEBAR ===== */
 section[data-testid="stSidebar"] {
-    background: rgba(18, 18, 20, 0.85) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(245, 245, 247, 0.92) !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
     backdrop-filter: blur(40px);
+}
+section[data-testid="stSidebar"] * {
+    color: #1d1d1f;
 }
 
 /* ===== FOOTER ===== */
@@ -414,13 +429,12 @@ section[data-testid="stSidebar"] {
     text-align: center;
     padding: 2.5rem 1rem;
     margin-top: 3.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    color: rgba(235, 235, 245, 0.4);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    color: #86868b;
     font-size: 0.82rem;
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 # ============================================================
 # SIDEBAR NAVIGATION & METADATA
@@ -429,8 +443,8 @@ with st.sidebar:
     st.markdown("""
     <div style="padding: 1rem 0; text-align: center;">
         <div style="font-size: 3rem; margin-bottom: 0.4rem;">🛡️</div>
-        <div style="font-size: 1.15rem; font-weight: 700; color: #ffffff; letter-spacing: -0.3px;">CyberShield AI</div>
-        <div style="font-size: 0.75rem; color: rgba(235, 235, 245, 0.45); margin-top: 0.2rem;">Threat Forecasting System</div>
+        <div style="font-size: 1.18rem; font-weight: 700; color: #1d1d1f; letter-spacing: -0.3px;">CyberShield AI</div>
+        <div style="font-size: 0.78rem; color: #6e6e73; margin-top: 0.2rem;">Threat Forecasting System</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -457,9 +471,8 @@ Validation Loss: 0.0773""", language="yaml")
     st.markdown("---")
     st.caption("Smart India Hackathon 2026 Submission")
 
-
 # ============================================================
-# HERO WINDOW
+# HERO WINDOW (HEARTWARMING MACOS GLASS)
 # ============================================================
 st.markdown("""
 <div class="hero-window">
@@ -467,14 +480,13 @@ st.markdown("""
         <span class="dot dot-red"></span>
         <span class="dot dot-yellow"></span>
         <span class="dot dot-green"></span>
-        <span class="window-title">CyberShield — Threat Overview &amp; 3D Engine</span>
+        <span class="window-title">CyberShield — Network Intelligence &amp; 3D Engine</span>
     </div>
     <div class="hero-title">AI based Network Attack Forecasting</div>
     <div class="hero-sub">From Network Traffic Data // Proactive Cyber Threat Intelligence</div>
     <div class="hero-tag">SIH26153 • Theme: Blockchain &amp; Cybersecurity • Category: Software</div>
 </div>
 """, unsafe_allow_html=True)
-
 
 # ============================================================
 # DATA INGESTION
@@ -505,7 +517,6 @@ if uploaded_file is not None:
         st.error(f"Ingestion error: {e}")
 else:
     st.info("Awaiting network traffic data upload to initialize threat analysis pipeline...")
-
 
 # ============================================================
 # NETWORK OVERVIEW METRICS
@@ -539,7 +550,6 @@ else:
     for c, l in zip(st.columns(5), ["Total Flows", "Source IPs", "Dest IPs", "Attack Flows", "Threat Ratio"]):
         with c: st.metric(l, "—")
 
-
 # ============================================================
 # THREAT FORECAST & RISK ASSESSMENT
 # ============================================================
@@ -553,9 +563,9 @@ if data is not None and forecast_data is not None:
     ps = forecast_data.get("predicted_stage", "N/A")
     mc = forecast_data.get("model_confidence", 0)
 
-    color_map = {"CRITICAL": "#FF453A", "HIGH": "#FF9F0C", "MEDIUM": "#FFD60A", "LOW": "#30D158"}
+    color_map = {"CRITICAL": "#d70015", "HIGH": "#c93400", "MEDIUM": "#a05a00", "LOW": "#1a883a"}
     badge_map = {"CRITICAL": "badge-crit", "HIGH": "badge-hgh", "MEDIUM": "badge-med", "LOW": "badge-low"}
-    gc = color_map.get(rl, "#FFD60A")
+    gc = color_map.get(rl, "#a05a00")
     bc = badge_map.get(rl, "badge-med")
 
     g1, g2, g3 = st.columns(3)
@@ -574,7 +584,7 @@ if data is not None and forecast_data is not None:
         <div class="risk-card-macos">
             <div class="risk-sub-macos">Risk Classification</div>
             <div style="margin: 14px 0;"><span class="macos-badge {bc}">{rl}</span></div>
-            <div class="risk-sub-macos">Attack Probability: <strong style="color: #ffffff;">{ap * 100:.0f}%</strong></div>
+            <div class="risk-sub-macos">Attack Probability: <strong style="color: #1d1d1f;">{ap * 100:.0f}%</strong></div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -582,7 +592,7 @@ if data is not None and forecast_data is not None:
         st.markdown(f"""
         <div class="risk-card-macos">
             <div class="risk-sub-macos">Model Confidence</div>
-            <div class="risk-num-macos" style="color: #64D2FF; font-size: 3.2rem;">{mc * 100:.0f}%</div>
+            <div class="risk-num-macos" style="color: #0071e3; font-size: 3.2rem;">{mc * 100:.0f}%</div>
             <div class="risk-sub-macos">PyTorch Stacked LSTM</div>
         </div>
         """, unsafe_allow_html=True)
@@ -623,7 +633,6 @@ elif data is None:
 else:
     st.warning("Forecast engine output not available.")
 
-
 # ============================================================
 # MITRE ATT&CK & CAPEC INTELLIGENCE
 # ============================================================
@@ -663,20 +672,19 @@ if data is not None and forecast_data is not None:
                 note = v.get("note", "")
 
                 st.markdown(f"""
-                <div style="background: rgba(36, 36, 40, 0.6); border: 1px solid rgba(255, 69, 58, 0.3); border-radius: 14px; padding: 14px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(255, 59, 48, 0.25); border-radius: 14px; padding: 14px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
                     <div style="flex: 1; min-width: 250px;">
-                        <span style="font-weight: 700; color: #FF453A; font-size: 1.05rem;">{cve_id}</span>
-                        <span style="background: rgba(255, 69, 58, 0.2); color: #FF453A; border: 1px solid rgba(255,69,58,0.4); padding: 3px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin-left: 10px;">{severity} (CVSS {cvss})</span>
-                        <div style="color: rgba(235, 235, 245, 0.7); font-size: 0.88rem; margin-top: 5px;">{note}</div>
+                        <span style="font-weight: 700; color: #d70015; font-size: 1.05rem;">{cve_id}</span>
+                        <span style="background: rgba(255, 59, 48, 0.1); color: #d70015; border: 1px solid rgba(255,59,48,0.25); padding: 3px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin-left: 10px;">{severity} (CVSS {cvss})</span>
+                        <div style="color: #515154; font-size: 0.88rem; margin-top: 5px;">{note}</div>
                     </div>
                     <div style="margin-top: 8px;">
-                        <a href="{url}" target="_blank" style="display: inline-block; background: rgba(0, 122, 255, 0.2); color: #64D2FF; border: 1px solid rgba(0, 122, 255, 0.4); padding: 6px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; text-decoration: none;">🔗 View on NVD NIST →</a>
+                        <a href="{url}" target="_blank" style="display: inline-block; background: rgba(0, 113, 227, 0.1); color: #0071e3; border: 1px solid rgba(0, 113, 227, 0.25); padding: 6px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; text-decoration: none;">🔗 View on NVD NIST →</a>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 else:
     st.info("Upload traffic data to view threat intelligence mapping.")
-
 
 # ============================================================
 # EXPLAINABILITY & FEATURE ATTRIBUTION
@@ -700,9 +708,8 @@ if importance_data is not None:
 else:
     st.info("Awaiting explainability module...")
 
-
 # ============================================================
-# MODEL EVALUATION BENCHMARKS
+# MODEL PERFORMANCE BENCHMARKS
 # ============================================================
 st.markdown('<div class="section-lbl">📈 Model Performance Benchmarks</div>', unsafe_allow_html=True)
 
@@ -724,7 +731,6 @@ if metrics_data is not None:
     st.bar_chart(pd.DataFrame({"Metric": list(vals.keys())[:4], "Score (%)": list(vals.values())[:4]}).set_index("Metric"), use_container_width=True)
 else:
     st.info("Awaiting evaluation module...")
-
 
 # ============================================================
 # FOOTER
