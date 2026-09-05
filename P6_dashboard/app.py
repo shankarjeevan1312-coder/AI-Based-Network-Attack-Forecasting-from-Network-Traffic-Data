@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 import pandas as pd
 import json
 from pathlib import Path
@@ -47,7 +47,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# THREE.JS 3D CANVAS & CUSTOM CURSOR INJECTION
+# THREE.JS 3D CANVAS INJECTION
 # ============================================================
 threejs_canvas_html = """
 <!DOCTYPE html>
@@ -63,70 +63,67 @@ threejs_canvas_html = """
 <body>
 <div id="canvas-container"></div>
 <script>
-    // 3D Three.js Particle Mesh & Wireframe Globe
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 25;
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 24;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // Group for mouse parallax
     const worldGroup = new THREE.Group();
     scene.add(worldGroup);
 
-    // 1. Wireframe Cyber Sphere
-    const sphereGeo = new THREE.IcosahedronGeometry(9, 3);
+    // 1. macOS Glass 3D Sphere Mesh
+    const sphereGeo = new THREE.IcosahedronGeometry(8.5, 3);
     const sphereMat = new THREE.MeshBasicMaterial({
-        color: 0x00d4ff,
+        color: 0x007AFF,
         wireframe: true,
         transparent: true,
-        opacity: 0.15
+        opacity: 0.18
     });
     const cyberSphere = new THREE.Mesh(sphereGeo, sphereMat);
     worldGroup.add(cyberSphere);
 
-    // 2. Inner Glow Sphere
-    const innerGeo = new THREE.IcosahedronGeometry(6, 2);
+    // 2. Inner Purple Core
+    const innerGeo = new THREE.IcosahedronGeometry(5.5, 2);
     const innerMat = new THREE.MeshBasicMaterial({
-        color: 0x7b2ff7,
+        color: 0x5E5CE6,
         wireframe: true,
         transparent: true,
-        opacity: 0.25
+        opacity: 0.28
     });
     const innerSphere = new THREE.Mesh(innerGeo, innerMat);
     worldGroup.add(innerSphere);
 
-    // 3. Floating Particle Network
-    const particlesCount = 700;
+    // 3. Floating Ambient Particles
+    const particlesCount = 550;
     const posArray = new Float32Array(particlesCount * 3);
     for(let i=0; i<particlesCount*3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 60;
+        posArray[i] = (Math.random() - 0.5) * 55;
     }
     const particlesGeo = new THREE.BufferGeometry();
     particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
     const particlesMat = new THREE.PointsMaterial({
-        size: 0.18,
-        color: 0x00d4ff,
+        size: 0.15,
+        color: 0x64D2FF,
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.6,
         blending: THREE.AdditiveBlending
     });
     const particleSystem = new THREE.Points(particlesGeo, particlesMat);
     worldGroup.add(particleSystem);
 
-    // Mouse movement tracking for 3D parallax tilt
     let mouseX = 0, mouseY = 0;
     let targetX = 0, targetY = 0;
 
     window.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
-        mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+        mouseX = (e.clientX - window.innerWidth / 2) * 0.0008;
+        mouseY = (e.clientY - window.innerHeight / 2) * 0.0008;
     });
 
     window.addEventListener('resize', () => {
@@ -135,24 +132,22 @@ threejs_canvas_html = """
         renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Animation Loop (60fps)
     function animate() {
         requestAnimationFrame(animate);
 
-        cyberSphere.rotation.y += 0.002;
-        cyberSphere.rotation.x += 0.001;
+        cyberSphere.rotation.y += 0.0018;
+        cyberSphere.rotation.x += 0.0008;
         
-        innerSphere.rotation.y -= 0.003;
-        innerSphere.rotation.z += 0.0015;
+        innerSphere.rotation.y -= 0.0025;
+        innerSphere.rotation.z += 0.0012;
 
-        particleSystem.rotation.y += 0.0008;
+        particleSystem.rotation.y += 0.0006;
 
-        // Smooth Mouse Parallax Interpolation
         targetX += (mouseX - targetX) * 0.05;
         targetY += (mouseY - targetY) * 0.05;
 
-        worldGroup.rotation.y = targetX * 2;
-        worldGroup.rotation.x = -targetY * 2;
+        worldGroup.rotation.y = targetX * 1.8;
+        worldGroup.rotation.x = -targetY * 1.8;
 
         renderer.render(scene, camera);
     }
@@ -162,384 +157,266 @@ threejs_canvas_html = """
 </html>
 """
 
-# Render 3D Three.js canvas in background iframe
-components.html(threejs_canvas_html, height=260, scrolling=False)
+components.html(threejs_canvas_html, height=240, scrolling=False)
 
 
 # ============================================================
-# HIGH-END 3D FUTURISTIC STYLES
+# macOS MAJESTIC GLASSMORPHISM & CLEAN TYPOGRAPHY STYLES
 # ============================================================
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;800;900&family=Sora:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ===== GLOBAL BACKGROUND & TYPOGRAPHY ===== */
+/* ===== macOS DARK MODE BASE ===== */
 .stApp {
-    background: #03030c !important;
-    font-family: 'Space Grotesk', sans-serif !important;
-    color: #e0e0f5 !important;
+    background: #000000 !important;
+    background-image:
+        radial-gradient(at 15% 15%, rgba(0, 122, 255, 0.06) 0px, transparent 50%),
+        radial-gradient(at 85% 85%, rgba(94, 92, 230, 0.06) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(48, 209, 88, 0.03) 0px, transparent 50%);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif !important;
+    color: #f5f5f7 !important;
 }
 
-/* Custom Cursor Effects */
-body {
-    cursor: default;
-}
-
-/* ===== 3D GLASSMORPHISM CARDS ===== */
-.glass-panel {
-    background: rgba(12, 12, 32, 0.65);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(0, 212, 255, 0.15);
-    border-radius: 24px;
-    padding: 2rem;
-    margin-bottom: 1.5rem;
+/* ===== macOS WINDOW CONTAINER ===== */
+.macos-window {
+    background: rgba(28, 28, 30, 0.65);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 1.8rem 2.2rem;
+    margin-bottom: 1.6rem;
     box-shadow:
-        0 10px 40px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        0 20px 50px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     position: relative;
-    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.glass-panel:hover {
-    transform: translateY(-6px) perspective(1000px) rotateX(1.5deg) scale(1.008);
-    border-color: rgba(0, 212, 255, 0.4);
+.macos-window:hover {
+    border-color: rgba(255, 255, 255, 0.22);
     box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.6),
-        0 0 50px rgba(0, 212, 255, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        0 30px 70px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(0, 122, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
 }
 
-.glass-panel::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -150%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.08), transparent);
-    transition: left 0.8s ease;
+/* macOS Window Control Dots */
+.window-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.2rem;
 }
-.glass-panel:hover::before {
-    left: 150%;
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.dot-red { background: #FF5F56; border: 0.5px solid #E0443E; }
+.dot-yellow { background: #FFBD2E; border: 0.5px solid #DEA123; }
+.dot-green { background: #27C93F; border: 0.5px solid #1AAB29; }
+.window-title {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 500;
+    margin-left: 6px;
+    letter-spacing: 0.5px;
 }
 
-/* ===== 3D HERO HEADER ===== */
-.hero-container {
-    background: linear-gradient(135deg, rgba(8, 8, 26, 0.95), rgba(18, 18, 48, 0.85));
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(0, 212, 255, 0.2);
-    border-radius: 28px;
-    padding: 2.8rem 3.5rem;
+/* ===== HERO WINDOW ===== */
+.hero-window {
+    background: linear-gradient(135deg, rgba(30, 30, 35, 0.75), rgba(15, 15, 20, 0.85));
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 24px;
+    padding: 2.8rem 3.2rem;
     margin-bottom: 2.2rem;
     position: relative;
     overflow: hidden;
     box-shadow:
-        0 30px 90px rgba(0,0,0,0.6),
-        0 0 70px rgba(0, 212, 255, 0.08),
-        inset 0 1px 0 rgba(255,255,255,0.08);
-    animation: heroFloating 7s ease-in-out infinite;
+        0 30px 80px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(0, 122, 255, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
-@keyframes heroFloating {
-    0%, 100% { transform: translateY(0px) rotateX(0deg); }
-    50% { transform: translateY(-5px) rotateX(0.8deg); }
-}
-
-.hero-title-text {
-    font-family: 'Orbitron', monospace;
-    font-size: 3.2rem;
-    font-weight: 900;
-    background: linear-gradient(90deg, #00d4ff 0%, #7b2ff7 35%, #ff006e 70%, #00d4ff 100%);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradientShimmer 5s ease infinite;
-    letter-spacing: 3px;
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #ffffff;
     margin-bottom: 0.4rem;
 }
-@keyframes gradientShimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+.hero-sub {
+    font-size: 1.05rem;
+    color: rgba(235, 235, 245, 0.6);
+    font-weight: 400;
+    letter-spacing: 0.2px;
 }
-
-.hero-subtitle-text {
-    font-family: 'Sora', sans-serif;
-    color: rgba(160, 160, 220, 0.9);
-    font-size: 1.15rem;
-    font-weight: 300;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-}
-
-.hero-tag-pill {
-    display: inline-block;
-    background: linear-gradient(135deg, rgba(123, 47, 247, 0.35), rgba(0, 212, 255, 0.35));
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    color: #00d4ff;
-    padding: 6px 22px;
+.hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 122, 255, 0.12);
+    border: 1px solid rgba(0, 122, 255, 0.3);
+    color: #64D2FF;
+    padding: 6px 16px;
     border-radius: 30px;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 3px;
+    font-size: 0.8rem;
+    font-weight: 600;
     margin-top: 1.2rem;
-    text-transform: uppercase;
-    box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
 }
 
-/* ===== HOLOGRAPHIC SECTION HEADERS ===== */
-.cyber-hdr {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: transparent;
-    background: linear-gradient(90deg, #00d4ff, #7b2ff7, #00d4ff);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    animation: holoText 4s linear infinite;
-    padding: 12px 22px;
-    border-left: 4px solid #00d4ff;
-    margin: 2.2rem 0 1.4rem 0;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    background-color: rgba(0, 212, 255, 0.03);
-    border-radius: 0 12px 12px 0;
-}
-@keyframes holoText {
-    0% { background-position: 0% center; }
-    100% { background-position: 200% center; }
+/* ===== SECTION HEADERS ===== */
+.section-lbl {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 2.2rem 0 1.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.3px;
 }
 
-/* ===== 3D METRICS CARDS ===== */
+/* ===== METRICS CARDS ===== */
 [data-testid="stMetric"] {
-    background: rgba(12, 12, 32, 0.75) !important;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 212, 255, 0.12);
-    border-radius: 20px;
-    padding: 22px 26px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.4),
-        inset 0 1px 0 rgba(255,255,255,0.05);
+    background: rgba(36, 36, 40, 0.6) !important;
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    padding: 20px 22px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 [data-testid="stMetric"]:hover {
-    transform: translateY(-6px) perspective(600px) rotateX(3deg);
-    border-color: rgba(0, 212, 255, 0.35);
-    box-shadow:
-        0 20px 50px rgba(0,0,0,0.5),
-        0 0 35px rgba(0, 212, 255, 0.1);
+    transform: translateY(-3px) !important;
+    border-color: rgba(0, 122, 255, 0.4) !important;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.4), 0 0 30px rgba(0, 122, 255, 0.12) !important;
 }
 [data-testid="stMetricLabel"] {
-    color: rgba(140, 140, 200, 0.85) !important;
-    font-family: 'Sora', sans-serif !important;
-    font-size: 0.8rem !important;
-    font-weight: 600 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1.5px !important;
+    color: rgba(235, 235, 245, 0.55) !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.2px !important;
 }
 [data-testid="stMetricValue"] {
-    font-family: 'Orbitron', monospace !important;
-    font-weight: 800 !important;
-    font-size: 1.75rem !important;
-    background: linear-gradient(135deg, #00d4ff, #7b2ff7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 1.7rem !important;
+    letter-spacing: -0.5px !important;
 }
 
-/* ===== 3D RISK GAUGE DISPLAYS ===== */
-.gauge-box-3d {
-    background: rgba(12, 12, 32, 0.75);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(0, 212, 255, 0.15);
-    border-radius: 24px;
-    padding: 2.2rem;
+/* ===== RISK GAUGE BOX ===== */
+.risk-card-macos {
+    background: rgba(30, 30, 35, 0.65);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 2rem;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+    transition: all 0.3s;
 }
-.gauge-box-3d:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(0,212,255,0.08);
+.risk-card-macos:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
 }
-.gauge-num-3d {
-    font-family: 'Orbitron', monospace;
-    font-size: 4.2rem;
-    font-weight: 900;
+.risk-num-macos {
+    font-size: 3.8rem;
+    font-weight: 700;
     line-height: 1;
-    text-shadow: 0 0 35px currentColor;
+    letter-spacing: -1px;
 }
-.gauge-sub-lbl {
-    font-family: 'Sora', sans-serif;
-    color: rgba(130, 130, 190, 0.8);
-    font-size: 0.78rem;
+.risk-sub-macos {
+    color: rgba(235, 235, 245, 0.5);
+    font-size: 0.8rem;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    margin-top: 0.6rem;
-}
-.bar-track-3d {
-    height: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    margin-top: 1.2rem;
-    overflow: hidden;
-    position: relative;
-}
-.bar-fill-3d {
-    height: 100%;
-    border-radius: 4px;
-    position: relative;
-    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.bar-fill-3d::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
-    animation: fillShimmer 2.2s infinite;
-}
-@keyframes fillShimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
 }
 
-/* ===== NEON RISK BADGES ===== */
-.badge-neon {
+/* ===== BADGES ===== */
+.macos-badge {
     display: inline-block;
-    padding: 12px 32px;
-    border-radius: 35px;
-    font-family: 'Orbitron', monospace;
-    font-weight: 800;
-    font-size: 1.15rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
 }
-.badge-critical {
-    background: linear-gradient(135deg, #ff1744, #d50000);
-    color: white;
-    box-shadow: 0 0 25px rgba(255,23,68,0.5), 0 0 70px rgba(255,23,68,0.2);
-    animation: criticalPulse 1.5s ease-in-out infinite;
-}
-.badge-high {
-    background: linear-gradient(135deg, #ff6d00, #e65100);
-    color: white;
-    box-shadow: 0 0 25px rgba(255,109,0,0.4), 0 0 50px rgba(255,109,0,0.15);
-}
-.badge-medium {
-    background: linear-gradient(135deg, #ffab00, #ff8f00);
-    color: #111;
-    box-shadow: 0 0 25px rgba(255,171,0,0.4), 0 0 50px rgba(255,171,0,0.15);
-}
-.badge-low {
-    background: linear-gradient(135deg, #00e676, #00c853);
-    color: #111;
-    box-shadow: 0 0 25px rgba(0,230,118,0.4), 0 0 50px rgba(0,230,118,0.15);
-}
-@keyframes criticalPulse {
-    0%, 100% { box-shadow: 0 0 25px rgba(255,23,68,0.5); }
-    50% { box-shadow: 0 0 50px rgba(255,23,68,0.8), 0 0 90px rgba(255,23,68,0.3); }
-}
+.badge-crit { background: rgba(255, 69, 58, 0.2); color: #FF453A; border: 1px solid rgba(255, 69, 58, 0.4); }
+.badge-hgh { background: rgba(255, 159, 10, 0.2); color: #FF9F0C; border: 1px solid rgba(255, 159, 10, 0.4); }
+.badge-med { background: rgba(255, 214, 10, 0.2); color: #FFD60A; border: 1px solid rgba(255, 214, 10, 0.4); }
+.badge-low { background: rgba(48, 209, 88, 0.2); color: #30D158; border: 1px solid rgba(48, 209, 88, 0.4); }
 
-/* ===== STAGE PIPELINE ===== */
-.pipeline-flow {
+/* ===== STAGE FLOW ===== */
+.macos-flow {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0;
-    padding: 24px 35px;
-    background: rgba(12, 12, 32, 0.7);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(0, 212, 255, 0.12);
-    border-radius: 24px;
+    gap: 12px;
+    background: rgba(30, 30, 35, 0.6);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 20px 30px;
     flex-wrap: wrap;
 }
-.node-chip {
-    padding: 14px 32px;
-    border-radius: 16px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: 0.5px;
+.flow-chip {
+    padding: 10px 22px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
 }
-.node-curr {
-    background: linear-gradient(135deg, #1565c0, #0d47a1);
-    color: white;
-    border: 1px solid rgba(66, 165, 245, 0.6);
-    box-shadow: 0 0 30px rgba(21, 101, 192, 0.4);
-}
-.node-pred {
-    background: linear-gradient(135deg, #c62828, #b71c1c);
-    color: white;
-    border: 1px solid rgba(239, 83, 80, 0.6);
-    box-shadow: 0 0 30px rgba(198, 40, 40, 0.4);
-    animation: targetPulse 2s ease-in-out infinite;
-}
-@keyframes targetPulse {
-    0%, 100% { box-shadow: 0 0 30px rgba(198, 40, 40, 0.4); }
-    50% { box-shadow: 0 0 50px rgba(198, 40, 40, 0.7); }
-}
-.node-arrow {
-    color: #7b2ff7;
-    font-size: 1.8rem;
-    padding: 0 20px;
-    font-family: monospace;
-    text-shadow: 0 0 15px rgba(123, 47, 247, 0.6);
-}
+.chip-curr { background: rgba(0, 122, 255, 0.2); color: #64D2FF; border: 1px solid rgba(0, 122, 255, 0.4); }
+.chip-pred { background: rgba(255, 69, 58, 0.2); color: #FF453A; border: 1px solid rgba(255, 69, 58, 0.4); }
+.chip-arrow { color: rgba(235, 235, 245, 0.4); font-size: 1.2rem; }
 
-/* ===== TABS & DATAFRAMES ===== */
+/* ===== TABS & TABLES ===== */
 .stTabs [data-baseweb="tab-list"] { gap: 10px; }
 .stTabs [data-baseweb="tab"] {
-    background: rgba(12, 12, 32, 0.7);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(0, 212, 255, 0.12);
-    border-radius: 14px;
-    color: rgba(160, 160, 220, 0.85);
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
-    padding: 10px 24px;
-    transition: all 0.3s;
+    background: rgba(36, 36, 40, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: rgba(235, 235, 245, 0.6);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 20px;
+    transition: all 0.25s;
 }
 .stTabs [aria-selected="true"] {
-    background: linear-gradient(135deg, rgba(123, 47, 247, 0.5), rgba(0, 212, 255, 0.3)) !important;
-    color: white !important;
-    border-color: rgba(123, 47, 247, 0.6) !important;
-    box-shadow: 0 0 25px rgba(123, 47, 247, 0.25);
+    background: rgba(0, 122, 255, 0.25) !important;
+    color: #ffffff !important;
+    border-color: rgba(0, 122, 255, 0.5) !important;
 }
 
 [data-testid="stDataFrame"] {
-    border: 1px solid rgba(0, 212, 255, 0.1) !important;
-    border-radius: 16px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
     overflow: hidden;
 }
 
-/* ===== SIDEBAR & FOOTER ===== */
+/* ===== SIDEBAR ===== */
 section[data-testid="stSidebar"] {
-    background: rgba(4, 4, 14, 0.96) !important;
-    border-right: 1px solid rgba(0, 212, 255, 0.1);
-    backdrop-filter: blur(25px);
+    background: rgba(18, 18, 20, 0.85) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(40px);
 }
 
-.footer-3d {
+/* ===== FOOTER ===== */
+.footer-macos {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 2.5rem 1rem;
     margin-top: 3.5rem;
-    border-top: 1px solid rgba(0, 212, 255, 0.1);
-    position: relative;
-}
-.footer-3d-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.9rem;
-    color: rgba(0, 212, 255, 0.7);
-    letter-spacing: 4px;
-    margin-bottom: 0.6rem;
-}
-.footer-3d-text {
-    font-family: 'Sora', sans-serif;
-    color: rgba(120, 120, 170, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(235, 235, 245, 0.4);
     font-size: 0.82rem;
-    letter-spacing: 1px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -550,10 +427,10 @@ section[data-testid="stSidebar"] {
 # ============================================================
 with st.sidebar:
     st.markdown("""
-    <div style="text-align:center; padding: 1.5rem 0;">
-        <div style="font-size: 3.8rem; filter: drop-shadow(0 0 20px rgba(0,212,255,0.4));">🛡️</div>
-        <div style="font-family: 'Orbitron', monospace; font-size: 1.15rem; font-weight: 900; background: linear-gradient(135deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.5rem; letter-spacing: 2px;">AI BASED NETWORK ATTACK FORECASTING</div>
-        <div style="font-family: 'Sora', sans-serif; color: rgba(120,120,180,0.6); font-size: 0.7rem; letter-spacing: 3px; margin-top: 0.2rem;">FROM NETWORK TRAFFIC DATA</div>
+    <div style="padding: 1rem 0; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 0.4rem;">🛡️</div>
+        <div style="font-size: 1.15rem; font-weight: 700; color: #ffffff; letter-spacing: -0.3px;">CyberShield AI</div>
+        <div style="font-size: 0.75rem; color: rgba(235, 235, 245, 0.45); margin-top: 0.2rem;">Threat Forecasting System</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -569,12 +446,12 @@ Framework: PyTorch
 Validation Loss: 0.0773""", language="yaml")
 
     st.markdown("---")
-    st.markdown("#### 🗄️ Connected Knowledge Bases")
+    st.markdown("#### 🗄️ Knowledge Bases")
     st.markdown("```\n[ONLINE] MITRE ATT&CK v14\n[ONLINE] CAPEC Patterns v3.9\n[ONLINE] CVE/NVD Context Feed\n```")
 
     st.markdown("---")
     st.markdown("#### 📡 Pipeline Architecture")
-    for phase in ["P1 Data Preprocessing", "P2 Temporal States", "P3 PyTorch LSTM Model", "P4 Threat Forecasting", "P5 Evaluation & XAI", "P6 3D SOC Dashboard"]:
+    for phase in ["P1 Data Preprocessing", "P2 Temporal States", "P3 PyTorch LSTM Model", "P4 Threat Forecasting", "P5 Evaluation & XAI", "P6 SOC Dashboard"]:
         st.markdown(f"🟢 **{phase}**")
 
     st.markdown("---")
@@ -582,13 +459,19 @@ Validation Loss: 0.0773""", language="yaml")
 
 
 # ============================================================
-# HERO BANNER
+# HERO WINDOW
 # ============================================================
 st.markdown("""
-<div class="hero-container">
-    <div class="hero-title-text">AI BASED NETWORK ATTACK FORECASTING</div>
-    <div class="hero-subtitle-text">FROM NETWORK TRAFFIC DATA // PROACTIVE CYBER THREAT INTELLIGENCE</div>
-    <div class="hero-tag-pill">SIH26153 // THEME: BLOCKCHAIN &amp; CYBERSECURITY // CATEGORY: SOFTWARE</div>
+<div class="hero-window">
+    <div class="window-dots">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-yellow"></span>
+        <span class="dot dot-green"></span>
+        <span class="window-title">CyberShield — Threat Overview &amp; 3D Engine</span>
+    </div>
+    <div class="hero-title">AI based Network Attack Forecasting</div>
+    <div class="hero-sub">From Network Traffic Data // Proactive Cyber Threat Intelligence</div>
+    <div class="hero-tag">SIH26153 • Theme: Blockchain &amp; Cybersecurity • Category: Software</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -596,7 +479,7 @@ st.markdown("""
 # ============================================================
 # DATA INGESTION
 # ============================================================
-st.markdown('<div class="cyber-hdr">📡 Network Traffic Ingestion Engine</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-lbl">📡 Network Traffic Ingestion</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
     "Drag and drop or browse a network traffic CSV file",
@@ -627,7 +510,7 @@ else:
 # ============================================================
 # NETWORK OVERVIEW METRICS
 # ============================================================
-st.markdown('<div class="cyber-hdr">📊 Network Situation Awareness</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-lbl">📊 Network Situation Awareness</div>', unsafe_allow_html=True)
 
 if data is not None:
     total_flows = len(data)
@@ -650,7 +533,7 @@ if data is not None:
         st.markdown("##### 📈 Flow Volume Telemetry")
         st.area_chart(data[["Packets", "Bytes"]].reset_index(drop=True), use_container_width=True)
     with cb:
-        st.markdown("##### 🎯 Threat Ratio Breakdown")
+        st.markdown("##### 🎯 Threat Composition")
         st.bar_chart(pd.DataFrame({"Category": ["Benign", "Attack"], "Count": [benign, atk]}).set_index("Category"), use_container_width=True)
 else:
     for c, l in zip(st.columns(5), ["Total Flows", "Source IPs", "Dest IPs", "Attack Flows", "Threat Ratio"]):
@@ -660,7 +543,7 @@ else:
 # ============================================================
 # THREAT FORECAST & RISK ASSESSMENT
 # ============================================================
-st.markdown('<div class="cyber-hdr">🔮 Threat Forecast &amp; Dynamic Risk Engine</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-lbl">🔮 Threat Forecast &amp; Risk Engine</div>', unsafe_allow_html=True)
 
 if data is not None and forecast_data is not None:
     ap = forecast_data.get("attack_probability", 0)
@@ -670,52 +553,49 @@ if data is not None and forecast_data is not None:
     ps = forecast_data.get("predicted_stage", "N/A")
     mc = forecast_data.get("model_confidence", 0)
 
-    color_map = {"CRITICAL": "#ff1744", "HIGH": "#ff6d00", "MEDIUM": "#ffab00", "LOW": "#00e676"}
-    badge_map = {"CRITICAL": "badge-critical", "HIGH": "badge-high", "MEDIUM": "badge-medium", "LOW": "badge-low"}
-    gc = color_map.get(rl, "#ffab00")
-    bc = badge_map.get(rl, "badge-medium")
+    color_map = {"CRITICAL": "#FF453A", "HIGH": "#FF9F0C", "MEDIUM": "#FFD60A", "LOW": "#30D158"}
+    badge_map = {"CRITICAL": "badge-crit", "HIGH": "badge-hgh", "MEDIUM": "badge-med", "LOW": "badge-low"}
+    gc = color_map.get(rl, "#FFD60A")
+    bc = badge_map.get(rl, "badge-med")
 
     g1, g2, g3 = st.columns(3)
 
     with g1:
         st.markdown(f"""
-        <div class="gauge-box-3d">
-            <div class="gauge-sub-lbl">Threat Risk Score</div>
-            <div class="gauge-num-3d" style="color: {gc};">{rs:.1f}</div>
-            <div class="gauge-sub-lbl">Scale 0 — 100</div>
-            <div class="bar-track-3d"><div class="bar-fill-3d" style="width:{rs}%; background: linear-gradient(90deg, {gc}, {gc}88);"></div></div>
+        <div class="risk-card-macos">
+            <div class="risk-sub-macos">Threat Risk Score</div>
+            <div class="risk-num-macos" style="color: {gc};">{rs:.1f}</div>
+            <div class="risk-sub-macos">Scale 0 — 100</div>
         </div>
         """, unsafe_allow_html=True)
 
     with g2:
         st.markdown(f"""
-        <div class="gauge-box-3d">
-            <div class="gauge-sub-lbl">Risk Classification</div>
-            <div style="margin: 16px 0;"><span class="badge-neon {bc}">{rl}</span></div>
-            <div class="gauge-sub-lbl">Predicted Attack Probability</div>
-            <div class="gauge-num-3d" style="color: {gc}; font-size: 2.8rem;">{ap * 100:.0f}%</div>
+        <div class="risk-card-macos">
+            <div class="risk-sub-macos">Risk Classification</div>
+            <div style="margin: 14px 0;"><span class="macos-badge {bc}">{rl}</span></div>
+            <div class="risk-sub-macos">Attack Probability: <strong style="color: #ffffff;">{ap * 100:.0f}%</strong></div>
         </div>
         """, unsafe_allow_html=True)
 
     with g3:
         st.markdown(f"""
-        <div class="gauge-box-3d">
-            <div class="gauge-sub-lbl">Model Confidence</div>
-            <div class="gauge-num-3d" style="color: #7b2ff7; font-size: 2.8rem;">{mc * 100:.0f}%</div>
-            <div class="gauge-sub-lbl">PyTorch LSTM World Model</div>
-            <div class="bar-track-3d"><div class="bar-fill-3d" style="width:{mc*100}%; background: linear-gradient(90deg, #7b2ff7, #7b2ff788);"></div></div>
+        <div class="risk-card-macos">
+            <div class="risk-sub-macos">Model Confidence</div>
+            <div class="risk-num-macos" style="color: #64D2FF; font-size: 3.2rem;">{mc * 100:.0f}%</div>
+            <div class="risk-sub-macos">PyTorch Stacked LSTM</div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("")
 
-    # Attack Stage Pipeline
-    st.markdown("##### ⚔️ Attack Kill Chain Progression")
+    # Attack Stage Flow
+    st.markdown("##### ⚔️ Attack Stage Progression")
     st.markdown(f"""
-    <div class="pipeline-flow">
-        <div class="node-chip node-curr">📍 Current Stage: {cs}</div>
-        <div class="node-arrow">▸ ▸ ▸</div>
-        <div class="node-chip node-pred">🎯 Predicted Stage: {ps}</div>
+    <div class="macos-flow">
+        <div class="flow-chip chip-curr">📍 Current Stage: {cs}</div>
+        <div class="chip-arrow">→</div>
+        <div class="flow-chip chip-pred">🎯 Predicted Stage: {ps}</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -747,7 +627,7 @@ else:
 # ============================================================
 # MITRE ATT&CK & CAPEC INTELLIGENCE
 # ============================================================
-st.markdown('<div class="cyber-hdr">🗺️ MITRE ATT&CK &amp; CAPEC Intelligence Matrix</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-lbl">🗺️ Threat Intelligence Matrix (MITRE &amp; CAPEC)</div>', unsafe_allow_html=True)
 
 if data is not None and forecast_data is not None:
     mitre = forecast_data.get("mitre_techniques", {})
@@ -774,7 +654,7 @@ if data is not None and forecast_data is not None:
 
     vuln = forecast_data.get("vulnerability_context", [])
     if vuln:
-        with st.expander("🔒 Interactive CVE/NVD Vulnerability Context Feed (Official NVD Links)", expanded=True):
+        with st.expander("🔒 Interactive CVE/NVD Vulnerability Feed", expanded=True):
             for v in vuln:
                 cve_id = v.get("cve_id", "N/A")
                 cvss = v.get("cvss", 10.0)
@@ -783,14 +663,14 @@ if data is not None and forecast_data is not None:
                 note = v.get("note", "")
 
                 st.markdown(f"""
-                <div style="background: rgba(12,12,32,0.8); border: 1px solid rgba(255,23,68,0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div style="background: rgba(36, 36, 40, 0.6); border: 1px solid rgba(255, 69, 58, 0.3); border-radius: 14px; padding: 14px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 250px;">
-                        <span style="font-family: 'Orbitron', monospace; font-size: 1rem; color: #ff1744; font-weight: 800;">{cve_id}</span>
-                        <span style="background: #ff1744; color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-left: 10px;">{severity} (CVSS {cvss})</span>
-                        <div style="color: #bbb; font-size: 0.88rem; margin-top: 4px;">{note}</div>
+                        <span style="font-weight: 700; color: #FF453A; font-size: 1.05rem;">{cve_id}</span>
+                        <span style="background: rgba(255, 69, 58, 0.2); color: #FF453A; border: 1px solid rgba(255,69,58,0.4); padding: 3px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin-left: 10px;">{severity} (CVSS {cvss})</span>
+                        <div style="color: rgba(235, 235, 245, 0.7); font-size: 0.88rem; margin-top: 5px;">{note}</div>
                     </div>
-                    <div style="margin-top: 6px;">
-                        <a href="{url}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #7b2ff7, #00d4ff); color: white; padding: 6px 16px; border-radius: 8px; font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 700; text-decoration: none; box-shadow: 0 0 15px rgba(0,212,255,0.2);">🔗 View on NVD NIST →</a>
+                    <div style="margin-top: 8px;">
+                        <a href="{url}" target="_blank" style="display: inline-block; background: rgba(0, 122, 255, 0.2); color: #64D2FF; border: 1px solid rgba(0, 122, 255, 0.4); padding: 6px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; text-decoration: none;">🔗 View on NVD NIST →</a>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -801,7 +681,7 @@ else:
 # ============================================================
 # EXPLAINABILITY & FEATURE ATTRIBUTION
 # ============================================================
-st.markdown('<div class="cyber-hdr">🔬 Explainability &amp; Feature Attribution</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-lbl">🔬 Explainability &amp; Feature Attribution</div>', unsafe_allow_html=True)
 
 if importance_data is not None:
     fl = importance_data.get("features", [])
@@ -822,9 +702,9 @@ else:
 
 
 # ============================================================
-# MODEL PERFORMANCE BENCHMARKS
+# MODEL EVALUATION BENCHMARKS
 # ============================================================
-st.markdown('<div class="cyber-hdr">📈 Model Performance Benchmarks</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-lbl">📈 Model Performance Benchmarks</div>', unsafe_allow_html=True)
 
 if metrics_data is not None:
     m = metrics_data.get("metrics", {})
@@ -850,11 +730,9 @@ else:
 # FOOTER
 # ============================================================
 st.markdown("""
-<div class="footer-3d">
-    <div class="footer-3d-title">AI BASED NETWORK ATTACK FORECASTING FROM NETWORK TRAFFIC DATA</div>
-    <div class="footer-3d-text">
-        Smart India Hackathon 2026 | Problem Statement Id: SIH26153 | Theme: Blockchain &amp; Cybersecurity | Category: Software<br>
-        Dataset: CIC-IDS2017 (2.57M Flows) | Deep Learning Core: PyTorch Stacked LSTM | Knowledge Bases: MITRE ATT&CK &amp; CAPEC &amp; CVE/NVD
-    </div>
+<div class="footer-macos">
+    <strong>AI BASED NETWORK ATTACK FORECASTING FROM NETWORK TRAFFIC DATA</strong><br>
+    Smart India Hackathon 2026 | Problem Statement Id: SIH26153 | Theme: Blockchain &amp; Cybersecurity | Category: Software<br>
+    Dataset: CIC-IDS2017 (2.57M Flows) | Deep Learning Core: PyTorch Stacked LSTM | Knowledge Bases: MITRE ATT&CK &amp; CAPEC &amp; CVE/NVD
 </div>
 """, unsafe_allow_html=True)
