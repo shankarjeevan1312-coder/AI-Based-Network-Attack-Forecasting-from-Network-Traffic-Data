@@ -40,7 +40,7 @@ if importance_file.exists():
 # PAGE CONFIG
 # ============================================================
 st.set_page_config(
-    page_title="CyberShield AI | Futuristic 3D Threat Forecasting",
+    page_title="AI based Network Attack Forecasting | SIH26153",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -552,14 +552,21 @@ with st.sidebar:
     st.markdown("""
     <div style="text-align:center; padding: 1.5rem 0;">
         <div style="font-size: 3.8rem; filter: drop-shadow(0 0 20px rgba(0,212,255,0.4));">🛡️</div>
-        <div style="font-family: 'Orbitron', monospace; font-size: 1.35rem; font-weight: 900; background: linear-gradient(135deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.5rem; letter-spacing: 3px;">CYBERSHIELD</div>
-        <div style="font-family: 'Sora', sans-serif; color: rgba(120,120,180,0.5); font-size: 0.7rem; letter-spacing: 5px; margin-top: 0.2rem;">3D THREAT ENGINE</div>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.15rem; font-weight: 900; background: linear-gradient(135deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.5rem; letter-spacing: 2px;">AI BASED NETWORK ATTACK FORECASTING</div>
+        <div style="font-family: 'Sora', sans-serif; color: rgba(120,120,180,0.6); font-size: 0.7rem; letter-spacing: 3px; margin-top: 0.2rem;">FROM NETWORK TRAFFIC DATA</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("#### ⚙️ System Specifications")
-    st.code("SIH Problem ID: SIH26153\nDataset: CIC-IDS2017\nTotal Records: 2,572,640\nModel Architecture: Stacked LSTM\nFramework: PyTorch\nBest Validation Loss: 0.0773", language="yaml")
+    st.markdown("#### ⚙️ Problem Statement Specs")
+    st.code("""Problem Statement Id: SIH26153
+Title: AI based Network Attack Forecasting from Network Traffic Data
+Theme: Blockchain & Cybersecurity
+Category: Software
+Dataset: CIC-IDS2017 (2,572,640 Flows)
+Model Architecture: Stacked LSTM
+Framework: PyTorch
+Validation Loss: 0.0773""", language="yaml")
 
     st.markdown("---")
     st.markdown("#### 🗄️ Connected Knowledge Bases")
@@ -579,9 +586,9 @@ with st.sidebar:
 # ============================================================
 st.markdown("""
 <div class="hero-container">
-    <div class="hero-title-text">CYBERSHIELD AI</div>
-    <div class="hero-subtitle-text">Proactive Cyber Defense Through Temporal Deep Learning &amp; Threat Intelligence</div>
-    <div class="hero-tag-pill">SIH26153 // Network Attack Forecasting Prototype</div>
+    <div class="hero-title-text">AI BASED NETWORK ATTACK FORECASTING</div>
+    <div class="hero-subtitle-text">FROM NETWORK TRAFFIC DATA // PROACTIVE CYBER THREAT INTELLIGENCE</div>
+    <div class="hero-tag-pill">SIH26153 // THEME: BLOCKCHAIN &amp; CYBERSECURITY // CATEGORY: SOFTWARE</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -844,10 +851,10 @@ else:
 # ============================================================
 st.markdown("""
 <div class="footer-3d">
-    <div class="footer-3d-title">CYBERSHIELD AI // HIGH-END 3D THREAT FORECASTING SYSTEM</div>
+    <div class="footer-3d-title">AI BASED NETWORK ATTACK FORECASTING FROM NETWORK TRAFFIC DATA</div>
     <div class="footer-3d-text">
-        Smart India Hackathon 2026 | Problem ID: SIH26153 | Dataset: CIC-IDS2017 (2.57M Flows)<br>
-        Deep Learning Engine: PyTorch Stacked LSTM | Threat Intel: MITRE ATT&CK &amp; CAPEC &amp; CVE/NVD
+        Smart India Hackathon 2026 | Problem Statement Id: SIH26153 | Theme: Blockchain &amp; Cybersecurity | Category: Software<br>
+        Dataset: CIC-IDS2017 (2.57M Flows) | Deep Learning Core: PyTorch Stacked LSTM | Knowledge Bases: MITRE ATT&CK &amp; CAPEC &amp; CVE/NVD
     </div>
 </div>
 """, unsafe_allow_html=True)
