@@ -16,7 +16,7 @@ def build_states(input_file, output_file):
 
 
 if __name__ == "__main__":
-    input_file = "../P1_data/network_traffic.csv"
+    input_file = r"./data/CIC-IDS2017/processed_data.csv"
     output_file = "temporal_states.csv"
 
     build_states(input_file, output_file)
