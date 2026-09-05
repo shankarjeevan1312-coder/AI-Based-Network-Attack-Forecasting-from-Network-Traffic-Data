@@ -35,114 +35,316 @@ if importance_file.exists():
     except Exception:
         importance_data = None
 
+
 # ============================================================
-# PAGE CONFIGURATION
+# PAGE CONFIG
 # ============================================================
 st.set_page_config(
-    page_title="AI Network Attack Forecasting | SIH26153",
+    page_title="CyberShield AI | Attack Forecasting",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+
 # ============================================================
-# CUSTOM CSS STYLING
+# PREMIUM CUSTOM CSS
 # ============================================================
 st.markdown("""
 <style>
-    /* Main header styling */
-    .main-header {
-        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-        padding: 2rem 2.5rem;
-        border-radius: 16px;
-        margin-bottom: 1.5rem;
-        border: 1px solid #4a4a8a;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-    .main-header h1 {
-        color: #00d4ff;
-        font-size: 2.2rem;
-        margin-bottom: 0.3rem;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-    }
-    .main-header p {
-        color: #a0a0d0;
-        font-size: 1.05rem;
-        margin: 0;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
-    /* Risk level badges */
-    .risk-critical { background: #ff1744; color: white; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; }
-    .risk-high { background: #ff6d00; color: white; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; }
-    .risk-medium { background: #ffd600; color: #333; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; }
-    .risk-low { background: #00c853; color: white; padding: 6px 18px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; }
+/* ===== GLOBAL ===== */
+.stApp {
+    background: linear-gradient(180deg, #0a0a1a 0%, #0d1117 40%, #0a0e1a 100%);
+}
 
-    /* Card styling */
-    .info-card {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border: 1px solid #2a2a5a;
-        border-radius: 12px;
-        padding: 1.2rem;
-        margin-bottom: 0.8rem;
-    }
-    .info-card h3 { color: #00d4ff; margin-bottom: 0.5rem; font-size: 1rem; }
-    .info-card .value { color: #ffffff; font-size: 1.8rem; font-weight: 700; }
+/* ===== HERO BANNER ===== */
+.hero-banner {
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 40%, #24243e 70%, #0f0c29 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 20px;
+    padding: 2.5rem 3rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.08), 0 20px 60px rgba(0,0,0,0.4);
+}
+.hero-banner::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: linear-gradient(45deg, #00d4ff, #7b2ff7, #ff006e, #00d4ff);
+    border-radius: 21px;
+    z-index: -1;
+    opacity: 0.3;
+    filter: blur(8px);
+}
+.hero-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.6rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #00d4ff, #7b2ff7, #00d4ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.3rem;
+    letter-spacing: 1px;
+}
+.hero-subtitle {
+    font-family: 'Rajdhani', sans-serif;
+    color: #8888cc;
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+}
+.hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #7b2ff7, #00d4ff);
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    margin-top: 0.8rem;
+    letter-spacing: 1px;
+}
 
-    /* Stage progression */
-    .stage-arrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        background: linear-gradient(90deg, #1a1a2e, #0d1b2a);
-        padding: 12px 20px;
-        border-radius: 10px;
-        border: 1px solid #2a2a5a;
-    }
-    .stage-box {
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-    .stage-current { background: #1565c0; color: white; }
-    .stage-predicted { background: #c62828; color: white; }
-    .stage-arrow-icon { color: #ff6d00; font-size: 1.5rem; }
+/* ===== SECTION HEADERS ===== */
+.cyber-section {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #00d4ff;
+    border-left: 4px solid #7b2ff7;
+    padding: 8px 16px;
+    margin: 2rem 0 1.2rem 0;
+    background: linear-gradient(90deg, rgba(123,47,247,0.08), transparent);
+    border-radius: 0 8px 8px 0;
+    letter-spacing: 1px;
+}
 
-    /* Section headers */
-    .section-header {
-        border-left: 4px solid #00d4ff;
-        padding-left: 12px;
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-    }
+/* ===== METRIC CARDS ===== */
+[data-testid="stMetric"] {
+    background: linear-gradient(145deg, #12122a 0%, #1a1a3e 100%);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 16px;
+    padding: 18px 22px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
+    transition: all 0.3s ease;
+}
+[data-testid="stMetric"]:hover {
+    border-color: rgba(0, 212, 255, 0.4);
+    box-shadow: 0 4px 30px rgba(0, 212, 255, 0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+    transform: translateY(-2px);
+}
+[data-testid="stMetricLabel"] {
+    color: #6666aa !important;
+    font-family: 'Rajdhani', sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+[data-testid="stMetricValue"] {
+    color: #00d4ff !important;
+    font-family: 'Orbitron', monospace !important;
+    font-weight: 700 !important;
+    font-size: 1.5rem !important;
+}
 
-    /* Footer */
-    .footer {
-        text-align: center;
-        color: #666;
-        padding: 1.5rem;
-        margin-top: 2rem;
-        border-top: 1px solid #333;
-        font-size: 0.85rem;
-    }
+/* ===== RISK BADGES ===== */
+.risk-badge {
+    display: inline-block;
+    padding: 8px 24px;
+    border-radius: 25px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.risk-critical {
+    background: linear-gradient(135deg, #ff1744, #d50000);
+    color: white;
+    box-shadow: 0 0 20px rgba(255,23,68,0.4);
+    animation: pulse-red 2s infinite;
+}
+.risk-high {
+    background: linear-gradient(135deg, #ff6d00, #e65100);
+    color: white;
+    box-shadow: 0 0 20px rgba(255,109,0,0.3);
+}
+.risk-medium {
+    background: linear-gradient(135deg, #ffd600, #f9a825);
+    color: #1a1a1a;
+    box-shadow: 0 0 20px rgba(255,214,0,0.3);
+}
+.risk-low {
+    background: linear-gradient(135deg, #00e676, #00c853);
+    color: #1a1a1a;
+    box-shadow: 0 0 20px rgba(0,230,118,0.3);
+}
 
-    /* Metric cards enhancement */
-    [data-testid="stMetric"] {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        border: 1px solid #2a2a5a;
-        border-radius: 12px;
-        padding: 15px 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    [data-testid="stMetricLabel"] {
-        color: #8888bb !important;
-        font-size: 0.85rem !important;
-    }
-    [data-testid="stMetricValue"] {
-        color: #00d4ff !important;
-        font-weight: 700 !important;
-    }
+@keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,23,68,0.4); }
+    50% { box-shadow: 0 0 35px rgba(255,23,68,0.7); }
+}
+
+/* ===== RISK GAUGE ===== */
+.gauge-container {
+    background: linear-gradient(145deg, #12122a, #1a1a3e);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+}
+.gauge-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+}
+.gauge-label {
+    font-family: 'Rajdhani', sans-serif;
+    color: #6666aa;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.gauge-bar {
+    height: 8px;
+    border-radius: 4px;
+    margin-top: 12px;
+    background: #1a1a2e;
+    overflow: hidden;
+}
+.gauge-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+}
+
+/* ===== ATTACK STAGE ===== */
+.stage-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: linear-gradient(90deg, #12122a, #1a1a3e, #12122a);
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: 1px solid rgba(0,212,255,0.1);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.stage-node {
+    padding: 10px 22px;
+    border-radius: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+.stage-current {
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    color: white;
+    border: 1px solid #42a5f5;
+    box-shadow: 0 0 15px rgba(21,101,192,0.3);
+}
+.stage-predicted {
+    background: linear-gradient(135deg, #c62828, #b71c1c);
+    color: white;
+    border: 1px solid #ef5350;
+    box-shadow: 0 0 15px rgba(198,40,40,0.3);
+}
+.stage-connector {
+    color: #7b2ff7;
+    font-size: 1.8rem;
+    padding: 0 12px;
+    font-family: monospace;
+}
+
+/* ===== TABS ===== */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    background: transparent;
+}
+.stTabs [data-baseweb="tab"] {
+    background: linear-gradient(145deg, #12122a, #1a1a3e);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 10px;
+    color: #8888cc;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    padding: 8px 20px;
+}
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, #7b2ff7, #5a1fd6) !important;
+    color: white !important;
+    border-color: #7b2ff7 !important;
+    box-shadow: 0 0 15px rgba(123,47,247,0.3);
+}
+
+/* ===== DATA FRAMES ===== */
+[data-testid="stDataFrame"] {
+    border: 1px solid rgba(0,212,255,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* ===== FOOTER ===== */
+.cyber-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: 3rem;
+    border-top: 1px solid rgba(0,212,255,0.1);
+    background: linear-gradient(180deg, transparent, rgba(123,47,247,0.03));
+}
+.cyber-footer .title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    color: #00d4ff;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+.cyber-footer .details {
+    font-family: 'Rajdhani', sans-serif;
+    color: #555588;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+/* ===== SIDEBAR ===== */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0a0a1a 0%, #12122a 50%, #0a0a1a 100%) !important;
+    border-right: 1px solid rgba(0,212,255,0.1);
+}
+section[data-testid="stSidebar"] .stMarkdown h2 {
+    font-family: 'Orbitron', monospace;
+    color: #00d4ff;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+/* ===== FILE UPLOADER ===== */
+[data-testid="stFileUploader"] {
+    border: 2px dashed rgba(123,47,247,0.3) !important;
+    border-radius: 16px;
+    background: rgba(123,47,247,0.03);
+    transition: all 0.3s;
+}
+[data-testid="stFileUploader"]:hover {
+    border-color: rgba(0,212,255,0.5) !important;
+    background: rgba(0,212,255,0.03);
+}
+
+/* ===== EXPANDER ===== */
+.streamlit-expanderHeader {
+    font-family: 'Rajdhani', sans-serif !important;
+    font-weight: 600 !important;
+    color: #8888cc !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -151,37 +353,51 @@ st.markdown("""
 # SIDEBAR
 # ============================================================
 with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/cyber-security.png", width=64)
-    st.markdown("## Navigation")
+    st.markdown("""
+    <div style="text-align:center; padding: 1rem 0;">
+        <div style="font-size: 3rem;">🛡️</div>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.2rem; color: #00d4ff; font-weight: 900; letter-spacing: 2px; margin-top: 0.5rem;">CYBERSHIELD AI</div>
+        <div style="font-family: 'Rajdhani', sans-serif; color: #555588; font-size: 0.8rem; letter-spacing: 3px; margin-top: 0.2rem;">THREAT FORECASTING</div>
+    </div>
+    """, unsafe_allow_html=True)
+
     st.markdown("---")
-    st.markdown("**SIH Problem:** `SIH26153`")
-    st.markdown("**Dataset:** CIC-IDS2017")
-    st.markdown("**Model:** LSTM World Model")
-    st.markdown("**Framework:** PyTorch")
+
+    st.markdown("## ⚙️ System Info")
+    st.markdown("""
+    | Parameter | Value |
+    |---|---|
+    | **Problem ID** | `SIH26153` |
+    | **Dataset** | CIC-IDS2017 |
+    | **Records** | 2,572,640 |
+    | **Model** | LSTM |
+    | **Framework** | PyTorch |
+    """)
+
     st.markdown("---")
-    st.markdown("### Knowledge Bases")
-    st.markdown("- MITRE ATT&CK")
-    st.markdown("- CAPEC Patterns")
-    st.markdown("- CVE/NVD Context")
+    st.markdown("## 🗄️ Knowledge Bases")
+    st.markdown("🔴 MITRE ATT&CK Framework")
+    st.markdown("🟠 CAPEC Attack Patterns")
+    st.markdown("🟡 CVE/NVD Advisories")
+
     st.markdown("---")
-    st.markdown("### Pipeline Phases")
-    st.markdown("1. Data Preprocessing")
-    st.markdown("2. Temporal State Modeling")
-    st.markdown("3. LSTM Deep Learning")
-    st.markdown("4. Threat Forecasting")
-    st.markdown("5. Evaluation & XAI")
-    st.markdown("6. SOC Dashboard")
+    st.markdown("## 🔗 Pipeline")
+    phases = ["P1 Data Preprocessing", "P2 Temporal States", "P3 LSTM World Model", "P4 Threat Forecasting", "P5 Evaluation & XAI", "P6 SOC Dashboard"]
+    for i, p in enumerate(phases):
+        st.markdown(f"✅ {p}")
+
     st.markdown("---")
-    st.caption("SIH 2026 | Team Prototype")
+    st.caption("Smart India Hackathon 2026")
 
 
 # ============================================================
-# MAIN HEADER
+# HERO BANNER
 # ============================================================
 st.markdown("""
-<div class="main-header">
-    <h1>🛡️ AI-Based Network Attack Forecasting</h1>
-    <p>Proactive Cyber Defense through Temporal Deep Learning &amp; Threat Intelligence | SIH26153</p>
+<div class="hero-banner">
+    <div class="hero-title">CYBERSHIELD AI</div>
+    <div class="hero-subtitle">PROACTIVE CYBER DEFENSE THROUGH TEMPORAL DEEP LEARNING & THREAT INTELLIGENCE</div>
+    <div class="hero-badge">SIH26153 // NETWORK ATTACK FORECASTING</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -189,7 +405,7 @@ st.markdown("""
 # ============================================================
 # DATA UPLOAD
 # ============================================================
-st.markdown('<div class="section-header"><h3>📁 Upload Network Traffic Data</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-section">📡 NETWORK TRAFFIC INGESTION</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
     "Drag and drop or browse a network traffic CSV file",
@@ -203,38 +419,32 @@ required_columns = ["Source_IP", "Destination_IP", "Packets", "Bytes", "Label"]
 if uploaded_file is not None:
     try:
         uploaded_data = pd.read_csv(uploaded_file)
-        missing_columns = [col for col in required_columns if col not in uploaded_data.columns]
-
-        if missing_columns:
-            st.error(f"CSV file is missing required columns: {missing_columns}")
-            st.write("Available columns:", list(uploaded_data.columns))
+        missing = [c for c in required_columns if c not in uploaded_data.columns]
+        if missing:
+            st.error(f"Missing columns: {missing}")
         else:
             data = uploaded_data
-            st.success(f"Loaded **{uploaded_file.name}** successfully — {data.shape[0]} rows x {data.shape[1]} columns")
-
-            with st.expander("📋 Preview Raw Data", expanded=False):
+            st.success(f"**{uploaded_file.name}** ingested successfully — {data.shape[0]:,} flows x {data.shape[1]} features")
+            with st.expander("📋 Raw Data Preview", expanded=False):
                 st.dataframe(data.head(15), use_container_width=True, hide_index=True)
-
     except Exception as e:
-        st.error(f"Unable to read CSV: {e}")
+        st.error(f"Ingestion error: {e}")
 else:
-    st.info("Upload a CSV file to begin analysis.")
+    st.info("Awaiting network traffic data upload to initialize threat analysis pipeline...")
 
 
 # ============================================================
-# NETWORK OVERVIEW METRICS
+# NETWORK OVERVIEW
 # ============================================================
-st.markdown('<div class="section-header"><h3>📊 Network Overview</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-section">📊 NETWORK SITUATION OVERVIEW</div>', unsafe_allow_html=True)
 
 if data is not None:
     total_flows = len(data)
     source_ips = data["Source_IP"].nunique()
-    destination_ips = data["Destination_IP"].nunique()
+    dest_ips = data["Destination_IP"].nunique()
     attack_count = (data["Label"] == "ATTACK").sum()
     normal_count = (data["Label"] == "BENIGN").sum()
     attack_pct = (attack_count / total_flows * 100) if total_flows > 0 else 0
-
-    risk_label = forecast_data.get("risk_level", "N/A") if forecast_data else "N/A"
 
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
@@ -242,255 +452,241 @@ if data is not None:
     with col2:
         st.metric("Source IPs", source_ips)
     with col3:
-        st.metric("Destination IPs", destination_ips)
+        st.metric("Dest IPs", dest_ips)
     with col4:
         st.metric("Attack Flows", f"{attack_count:,}")
     with col5:
-        st.metric("Attack Ratio", f"{attack_pct:.1f}%")
+        st.metric("Threat Ratio", f"{attack_pct:.1f}%")
 
-    st.markdown("---")
-
-    # Traffic visualization
-    col_chart1, col_chart2 = st.columns([2, 1])
-
-    with col_chart1:
-        st.markdown("#### 📈 Traffic Flow Volume")
-        chart_data = data[["Packets", "Bytes"]].reset_index(drop=True)
-        st.area_chart(chart_data, use_container_width=True)
-
-    with col_chart2:
-        st.markdown("#### 🎯 Traffic Distribution")
-        dist_df = pd.DataFrame({
-            "Category": ["BENIGN", "ATTACK"],
-            "Count": [normal_count, attack_count]
-        })
+    st.markdown("")
+    col_a, col_b = st.columns([2, 1])
+    with col_a:
+        st.markdown("##### 📈 Traffic Flow Telemetry")
+        st.area_chart(data[["Packets", "Bytes"]].reset_index(drop=True), use_container_width=True)
+    with col_b:
+        st.markdown("##### 🎯 Threat Distribution")
+        dist_df = pd.DataFrame({"Category": ["BENIGN", "ATTACK"], "Count": [normal_count, attack_count]})
         st.bar_chart(dist_df.set_index("Category"), use_container_width=True)
-
 else:
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
-        st.metric("Total Flows", "—")
-    with col2:
-        st.metric("Source IPs", "—")
-    with col3:
-        st.metric("Destination IPs", "—")
-    with col4:
-        st.metric("Attack Flows", "—")
-    with col5:
-        st.metric("Attack Ratio", "—")
-    st.info("Upload network traffic data to view the network overview.")
+    cols = st.columns(5)
+    labels = ["Total Flows", "Source IPs", "Dest IPs", "Attack Flows", "Threat Ratio"]
+    for c, l in zip(cols, labels):
+        with c:
+            st.metric(l, "—")
 
 
 # ============================================================
-# ATTACK FORECAST & RISK ASSESSMENT
+# RISK ASSESSMENT & FORECAST
 # ============================================================
-st.markdown('<div class="section-header"><h3>🔮 Attack Forecast & Risk Assessment</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-section">🔮 THREAT FORECAST & RISK ASSESSMENT</div>', unsafe_allow_html=True)
 
 if data is not None and forecast_data is not None:
-    attack_probability = forecast_data.get("attack_probability", 0)
+    attack_prob = forecast_data.get("attack_probability", 0)
     risk_score = forecast_data.get("risk_score", 0)
     risk_level = forecast_data.get("risk_level", "N/A")
     current_stage = forecast_data.get("current_stage", "N/A")
     predicted_stage = forecast_data.get("predicted_stage", "N/A")
     model_conf = forecast_data.get("model_confidence", 0)
 
-    # Risk color mapping
-    risk_colors = {"CRITICAL": "risk-critical", "HIGH": "risk-high", "MEDIUM": "risk-medium", "LOW": "risk-low"}
-    risk_class = risk_colors.get(risk_level, "risk-medium")
+    risk_colors_map = {"CRITICAL": "#ff1744", "HIGH": "#ff6d00", "MEDIUM": "#ffd600", "LOW": "#00e676"}
+    risk_cls_map = {"CRITICAL": "risk-critical", "HIGH": "risk-high", "MEDIUM": "risk-medium", "LOW": "risk-low"}
+    gauge_color = risk_colors_map.get(risk_level, "#ffd600")
+    risk_cls = risk_cls_map.get(risk_level, "risk-medium")
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Risk Score", f"{risk_score:.1f} / 100")
-    with col2:
-        st.markdown(f'**Risk Level:** <span class="{risk_class}">{risk_level}</span>', unsafe_allow_html=True)
-    with col3:
-        st.metric("Attack Probability", f"{attack_probability * 100:.0f}%")
-    with col4:
-        st.metric("Model Confidence", f"{model_conf * 100:.0f}%")
+    # Risk gauge + metrics row
+    g1, g2, g3 = st.columns([1, 1, 1])
+
+    with g1:
+        st.markdown(f"""
+        <div class="gauge-container">
+            <div class="gauge-label">RISK SCORE</div>
+            <div class="gauge-value" style="color: {gauge_color};">{risk_score:.1f}</div>
+            <div class="gauge-label">OUT OF 100</div>
+            <div class="gauge-bar">
+                <div class="gauge-fill" style="width: {risk_score}%; background: linear-gradient(90deg, {gauge_color}, {gauge_color}88);"></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with g2:
+        st.markdown(f"""
+        <div class="gauge-container">
+            <div class="gauge-label">RISK LEVEL</div>
+            <div style="margin: 12px 0;">
+                <span class="risk-badge {risk_cls}">{risk_level}</span>
+            </div>
+            <div class="gauge-label">ATTACK PROBABILITY</div>
+            <div class="gauge-value" style="color: {gauge_color}; font-size: 2.5rem;">{attack_prob * 100:.0f}%</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with g3:
+        st.markdown(f"""
+        <div class="gauge-container">
+            <div class="gauge-label">MODEL CONFIDENCE</div>
+            <div class="gauge-value" style="color: #7b2ff7; font-size: 2.5rem;">{model_conf * 100:.0f}%</div>
+            <div class="gauge-label">LSTM WORLD MODEL</div>
+            <div class="gauge-bar">
+                <div class="gauge-fill" style="width: {model_conf * 100}%; background: linear-gradient(90deg, #7b2ff7, #7b2ff788);"></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("")
 
     # Attack stage progression
-    st.markdown("#### ⚔️ Attack Stage Progression")
+    st.markdown("##### ⚔️ Attack Stage Progression")
     st.markdown(f"""
-    <div class="stage-arrow">
-        <span class="stage-box stage-current">📍 Current: {current_stage}</span>
-        <span class="stage-arrow-icon">➡️</span>
-        <span class="stage-box stage-predicted">🎯 Predicted: {predicted_stage}</span>
+    <div class="stage-flow">
+        <div class="stage-node stage-current">📍 {current_stage}</div>
+        <div class="stage-connector">▸▸▸</div>
+        <div class="stage-node stage-predicted">🎯 {predicted_stage}</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("")
 
-    # Forecast Timeline
-    st.markdown("#### 📅 Multi-Horizon Forecast Timeline")
+    # Timeline
+    st.markdown("##### 📅 Multi-Horizon Forecast Timeline")
     forecast = forecast_data.get("forecast", [])
-
     if forecast:
-        timeline_data = []
+        tl_data = []
         for item in forecast:
-            prob = item.get("attack_probability", 0)
-            rs = item.get("risk_score", 0)
-            rl = item.get("risk_level", "N/A")
-            risk_cls = risk_colors.get(rl, "risk-medium")
-            timeline_data.append({
-                "Horizon": item.get("time_offset", "N/A"),
-                "Attack Probability": f"{prob * 100:.0f}%",
-                "Risk Score": f"{rs:.1f}",
-                "Risk Level": rl
+            tl_data.append({
+                "Horizon": item.get("time_offset", ""),
+                "Attack Probability": f"{item.get('attack_probability', 0) * 100:.0f}%",
+                "Risk Score": f"{item.get('risk_score', 0):.1f}",
+                "Risk Level": item.get("risk_level", "N/A")
             })
+        st.dataframe(pd.DataFrame(tl_data), use_container_width=True, hide_index=True)
 
-        st.dataframe(
-            pd.DataFrame(timeline_data),
-            use_container_width=True,
-            hide_index=True
-        )
-
-        # Timeline chart
-        timeline_chart = pd.DataFrame([
-            {"Horizon": item.get("time_offset", ""), "Risk Score": item.get("risk_score", 0), "Attack %": item.get("attack_probability", 0) * 100}
-            for item in forecast
+        chart_df = pd.DataFrame([
+            {"Horizon": i.get("time_offset", ""), "Risk Score": i.get("risk_score", 0), "Attack %": i.get("attack_probability", 0) * 100}
+            for i in forecast
         ]).set_index("Horizon")
-        st.line_chart(timeline_chart, use_container_width=True)
+        st.area_chart(chart_df, use_container_width=True)
 
 elif data is None:
-    st.info("Upload a network traffic CSV file to view the attack forecast.")
+    st.info("Awaiting traffic data upload to generate threat forecast...")
 else:
-    st.warning("Forecast data is not available.")
+    st.warning("Forecast engine output not available.")
 
 
 # ============================================================
-# MITRE ATT&CK & CAPEC MAPPING
+# MITRE ATT&CK & CAPEC
 # ============================================================
-st.markdown('<div class="section-header"><h3>🗺️ MITRE ATT&CK & CAPEC Threat Mapping</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-section">🗺️ MITRE ATT&CK & CAPEC THREAT INTELLIGENCE</div>', unsafe_allow_html=True)
 
 if data is not None and forecast_data is not None:
-    mitre_data = forecast_data.get("mitre_techniques", {})
-    observed_techniques = mitre_data.get("observed", [])
-    predicted_techniques = mitre_data.get("predicted", [])
-    capec_patterns = forecast_data.get("capec_patterns", [])
+    mitre = forecast_data.get("mitre_techniques", {})
+    observed = mitre.get("observed", [])
+    predicted = mitre.get("predicted", [])
+    capec = forecast_data.get("capec_patterns", [])
 
     tab1, tab2, tab3 = st.tabs(["🔍 Observed Techniques", "🎯 Predicted Techniques", "📋 CAPEC Patterns"])
 
     with tab1:
-        if observed_techniques:
-            obs_df = pd.DataFrame([{
-                "ID": t.get("id", ""), "Technique": t.get("name", ""), "Tactic": t.get("tactic", ""), "Basis": t.get("basis", "")
-            } for t in observed_techniques])
-            st.dataframe(obs_df, use_container_width=True, hide_index=True)
+        if observed:
+            st.dataframe(pd.DataFrame([{
+                "ID": t.get("id"), "Technique": t.get("name"), "Tactic": t.get("tactic"), "Evidence": t.get("basis", "")
+            } for t in observed]), use_container_width=True, hide_index=True)
         else:
-            st.info("No observed MITRE techniques.")
+            st.info("No observed techniques.")
 
     with tab2:
-        if predicted_techniques:
-            pred_df = pd.DataFrame([{
-                "ID": t.get("id", ""), "Technique": t.get("name", ""), "Tactic": t.get("tactic", ""), "Basis": t.get("basis", "")
-            } for t in predicted_techniques])
-            st.dataframe(pred_df, use_container_width=True, hide_index=True)
+        if predicted:
+            st.dataframe(pd.DataFrame([{
+                "ID": t.get("id"), "Technique": t.get("name"), "Tactic": t.get("tactic"), "Evidence": t.get("basis", "")
+            } for t in predicted]), use_container_width=True, hide_index=True)
         else:
-            st.info("No predicted MITRE techniques.")
+            st.info("No predicted techniques.")
 
     with tab3:
-        if capec_patterns:
-            capec_df = pd.DataFrame([{
-                "ID": c.get("id", ""), "Pattern": c.get("name", ""), "Basis": c.get("basis", "")
-            } for c in capec_patterns])
-            st.dataframe(capec_df, use_container_width=True, hide_index=True)
+        if capec:
+            st.dataframe(pd.DataFrame([{
+                "ID": c.get("id"), "Pattern": c.get("name"), "Source": c.get("basis", "")
+            } for c in capec]), use_container_width=True, hide_index=True)
         else:
-            st.info("No CAPEC patterns mapped.")
+            st.info("No CAPEC patterns.")
 
-    # Vulnerability context
-    vuln_context = forecast_data.get("vulnerability_context", [])
-    if vuln_context:
-        with st.expander("🔒 CVE/NVD Vulnerability Context", expanded=False):
-            for vuln in vuln_context:
-                st.markdown(f"**{vuln.get('cve_id', 'N/A')}**: {vuln.get('note', '')}")
-
+    vuln = forecast_data.get("vulnerability_context", [])
+    if vuln:
+        with st.expander("🔒 CVE/NVD Vulnerability Context"):
+            for v in vuln:
+                st.markdown(f"**`{v.get('cve_id', '')}`** — {v.get('note', '')}")
 else:
-    st.info("Upload a network traffic CSV file to view MITRE ATT&CK mapping.")
+    st.info("Upload traffic data to view threat intelligence mapping.")
 
 
 # ============================================================
-# EXPLAINABILITY & FEATURE ATTRIBUTION
+# EXPLAINABILITY
 # ============================================================
-st.markdown('<div class="section-header"><h3>🔬 Explainability & Feature Attribution</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-section">🔬 EXPLAINABILITY & FEATURE ATTRIBUTION</div>', unsafe_allow_html=True)
 
 if importance_data is not None:
     features_list = importance_data.get("features", [])
     if features_list:
         feat_df = pd.DataFrame(
-            [{"Feature": item["feature"], "Importance": round(float(item["importance_mean"]), 4)} for item in features_list]
+            [{"Feature": i["feature"], "Importance": round(float(i["importance_mean"]), 4)} for i in features_list]
         ).sort_values(by="Importance", ascending=False)
 
-        col1, col2 = st.columns([1, 1])
-
-        with col1:
-            st.markdown("#### Top Feature Attribution Rankings")
+        c1, c2 = st.columns([1, 1])
+        with c1:
+            st.markdown("##### Feature Attribution Rankings")
             st.dataframe(feat_df, use_container_width=True, hide_index=True)
-            st.caption(f"Method: {importance_data.get('method', 'Permutation Feature Importance')} | Scoring: {importance_data.get('scoring', 'accuracy')}")
-
-        with col2:
-            st.markdown("#### Feature Importance Distribution")
+            st.caption(f"Method: {importance_data.get('method', 'Permutation Feature Importance')}")
+        with c2:
+            st.markdown("##### Importance Distribution")
             st.bar_chart(feat_df.set_index("Feature"), use_container_width=True)
     else:
         st.info("Feature importance data is empty.")
 else:
-    st.info("Feature importance will be displayed after the explainability module is connected.")
+    st.info("Awaiting explainability module connection...")
 
 
 # ============================================================
-# MODEL EVALUATION & BENCHMARKS
+# MODEL EVALUATION
 # ============================================================
-st.markdown('<div class="section-header"><h3>📈 Model Evaluation & Performance Benchmarks</h3></div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-section">📈 MODEL PERFORMANCE BENCHMARKS</div>', unsafe_allow_html=True)
 
 if metrics_data is not None:
-    metrics = metrics_data.get("metrics", {})
-    acc = metrics.get("accuracy", 1.0) * 100
-    prec = metrics.get("precision", 1.0) * 100
-    rec = metrics.get("recall", 1.0) * 100
-    f1 = metrics.get("f1_score", 1.0) * 100
-    fpr = metrics.get("false_positive_rate", 0.0) * 100
-    roc = metrics.get("roc_auc", 1.0)
+    m = metrics_data.get("metrics", {})
+    acc = m.get("accuracy", 1.0) * 100
+    prec = m.get("precision", 1.0) * 100
+    rec = m.get("recall", 1.0) * 100
+    f1 = m.get("f1_score", 1.0) * 100
+    fpr_val = m.get("false_positive_rate", 0.0) * 100
+    roc = m.get("roc_auc", 1.0)
 
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
+    c1, c2, c3, c4, c5 = st.columns(5)
+    with c1:
         st.metric("Accuracy", f"{acc:.1f}%")
-    with col2:
+    with c2:
         st.metric("Precision", f"{prec:.1f}%")
-    with col3:
+    with c3:
         st.metric("Recall", f"{rec:.1f}%")
-    with col4:
+    with c4:
         st.metric("F1 Score", f"{f1:.1f}%")
-    with col5:
-        st.metric("FPR", f"{fpr:.1f}%")
+    with c5:
+        st.metric("FPR", f"{fpr_val:.1f}%")
 
-    st.caption(f"Baseline: {metrics_data.get('model', 'Logistic Regression')} | Test Samples: {metrics_data.get('dataset', {}).get('test_samples', 'N/A')} | ROC-AUC: {roc}")
+    st.caption(f"Baseline: {metrics_data.get('model', 'Logistic Regression')} | Samples: {metrics_data.get('dataset', {}).get('test_samples', 'N/A')} | ROC-AUC: {roc}")
 
-    # Performance comparison chart
-    perf_df = pd.DataFrame({
-        "Metric": ["Accuracy", "Precision", "Recall", "F1 Score"],
-        "Score (%)": [acc, prec, rec, f1]
-    }).set_index("Metric")
+    perf_df = pd.DataFrame({"Metric": ["Accuracy", "Precision", "Recall", "F1"], "Score (%)": [acc, prec, rec, f1]}).set_index("Metric")
     st.bar_chart(perf_df, use_container_width=True)
-
 else:
-    st.info("Evaluation metrics will be displayed after the model evaluation module is connected.")
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Precision", "—")
-    with col2:
-        st.metric("Recall", "—")
-    with col3:
-        st.metric("F1 Score", "—")
-    with col4:
-        st.metric("FPR", "—")
+    st.info("Awaiting evaluation module connection...")
 
 
 # ============================================================
 # FOOTER
 # ============================================================
 st.markdown("""
-<div class="footer">
-    <strong>AI-Based Network Attack Forecasting from Network Traffic Data</strong><br>
-    SIH 2026 | Problem Statement: SIH26153 | Dataset: CIC-IDS2017 | Model: PyTorch LSTM World Model<br>
-    Knowledge Bases: MITRE ATT&CK | CAPEC | CVE/NVD
+<div class="cyber-footer">
+    <div class="title">CYBERSHIELD AI // NETWORK ATTACK FORECASTING SYSTEM</div>
+    <div class="details">
+        SIH 2026 | Problem: SIH26153 | Dataset: CIC-IDS2017 (2.57M Flows) | Model: PyTorch LSTM World Model<br>
+        Knowledge Bases: MITRE ATT&CK | CAPEC | CVE/NVD
+    </div>
 </div>
 """, unsafe_allow_html=True)
