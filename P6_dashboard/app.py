@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 import pandas as pd
 import json
 from pathlib import Path
@@ -47,9 +47,9 @@ st.set_page_config(
 )
 
 # ============================================================
-# THREE.JS 3D CANVAS (LIGHT & VIBRANT)
+# THREE.JS 3D CANVAS & SHOOTING STAR NETWORK CURSOR
 # ============================================================
-threejs_canvas_html = """
+threejs_and_cursor_html = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -63,11 +63,14 @@ threejs_canvas_html = """
 <body>
 <div id="canvas-container"></div>
 <script>
+    // ==========================================
+    // 1. THREE.JS 3D WIREFRAME GLOBE & PARTICLES
+    // ==========================================
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 24;
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 25;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -77,53 +80,49 @@ threejs_canvas_html = """
     const worldGroup = new THREE.Group();
     scene.add(worldGroup);
 
-    // 1. Sleek Azure Blue 3D Sphere Mesh
-    const sphereGeo = new THREE.IcosahedronGeometry(8.2, 3);
+    // 1. Outer Cyan Wireframe Globe
+    const sphereGeo = new THREE.IcosahedronGeometry(9, 3);
     const sphereMat = new THREE.MeshBasicMaterial({
-        color: 0x0071e3,
+        color: 0x00d4ff,
         wireframe: true,
         transparent: true,
-        opacity: 0.35
+        opacity: 0.16
     });
     const cyberSphere = new THREE.Mesh(sphereGeo, sphereMat);
     worldGroup.add(cyberSphere);
 
-    // 2. Inner Purple Crystal Core
-    const innerGeo = new THREE.IcosahedronGeometry(5.2, 2);
+    // 2. Inner Purple Core
+    const innerGeo = new THREE.IcosahedronGeometry(6, 2);
     const innerMat = new THREE.MeshBasicMaterial({
-        color: 0x6e56cf,
+        color: 0x7b2ff7,
         wireframe: true,
         transparent: true,
-        opacity: 0.45
+        opacity: 0.28
     });
     const innerSphere = new THREE.Mesh(innerGeo, innerMat);
     worldGroup.add(innerSphere);
 
-    // 3. Floating Ambient Azure & Coral Particles
-    const particlesCount = 450;
+    // 3. Floating Cyan Stardust Network
+    const particlesCount = 650;
     const posArray = new Float32Array(particlesCount * 3);
     for(let i=0; i<particlesCount*3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 55;
+        posArray[i] = (Math.random() - 0.5) * 60;
     }
     const particlesGeo = new THREE.BufferGeometry();
     particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
     const particlesMat = new THREE.PointsMaterial({
-        size: 0.16,
-        color: 0x0071e3,
+        size: 0.18,
+        color: 0x00d4ff,
         transparent: true,
-        opacity: 0.55
+        opacity: 0.65,
+        blending: THREE.AdditiveBlending
     });
     const particleSystem = new THREE.Points(particlesGeo, particlesMat);
     worldGroup.add(particleSystem);
 
     let mouseX = 0, mouseY = 0;
     let targetX = 0, targetY = 0;
-
-    window.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX - window.innerWidth / 2) * 0.0008;
-        mouseY = (e.clientY - window.innerHeight / 2) * 0.0008;
-    });
 
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -137,10 +136,10 @@ threejs_canvas_html = """
         cyberSphere.rotation.y += 0.002;
         cyberSphere.rotation.x += 0.001;
         
-        innerSphere.rotation.y -= 0.0028;
+        innerSphere.rotation.y -= 0.0026;
         innerSphere.rotation.z += 0.0014;
 
-        particleSystem.rotation.y += 0.0007;
+        particleSystem.rotation.y += 0.0008;
 
         targetX += (mouseX - targetX) * 0.05;
         targetY += (mouseY - targetY) * 0.05;
@@ -151,287 +150,532 @@ threejs_canvas_html = """
         renderer.render(scene, camera);
     }
     animate();
+
+    // ==============================================================
+    // 2. SHOOTING STAR & GLOWING NETWORK LINE TRAIL CURSOR SYSTEM
+    // ==============================================================
+    try {
+        const parentDoc = window.parent.document;
+
+        const oldCanvas = parentDoc.getElementById('shooting-star-canvas');
+        if (oldCanvas) oldCanvas.remove();
+
+        const canvas = parentDoc.createElement('canvas');
+        canvas.id = 'shooting-star-canvas';
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '9999999';
+        parentDoc.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() {
+            canvas.width = window.parent.innerWidth;
+            canvas.height = window.parent.innerHeight;
+        }
+        resizeCanvas();
+        window.parent.addEventListener('resize', resizeCanvas);
+
+        const points = [];
+        const maxPoints = 26;
+        const sparkles = [];
+        let currentMouse = { x: -100, y: -100, active: false };
+
+        parentDoc.addEventListener('mousemove', (e) => {
+            currentMouse.x = e.clientX;
+            currentMouse.y = e.clientY;
+            currentMouse.active = true;
+
+            mouseX = (e.clientX - window.parent.innerWidth / 2) * 0.0008;
+            mouseY = (e.clientY - window.parent.innerHeight / 2) * 0.0008;
+
+            points.push({
+                x: e.clientX,
+                y: e.clientY,
+                time: Date.now()
+            });
+
+            if (points.length > maxPoints) {
+                points.shift();
+            }
+
+            if (Math.random() > 0.35) {
+                sparkles.push({
+                    x: e.clientX + (Math.random() - 0.5) * 6,
+                    y: e.clientY + (Math.random() - 0.5) * 6,
+                    vx: (Math.random() - 0.5) * 1.4,
+                    vy: (Math.random() - 0.5) * 1.4,
+                    size: Math.random() * 2.2 + 1.0,
+                    alpha: 1.0,
+                    color: Math.random() > 0.5 ? '#00d4ff' : '#7b2ff7'
+                });
+            }
+        });
+
+        parentDoc.addEventListener('mouseleave', () => {
+            currentMouse.active = false;
+        });
+
+        function renderShootingStar() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (points.length > 2) {
+                for (let i = 1; i < points.length; i++) {
+                    const p1 = points[i - 1];
+                    const p2 = points[i];
+                    const progress = i / points.length;
+
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+
+                    ctx.lineCap = 'round';
+                    ctx.lineWidth = progress * 4.2 + 0.8;
+
+                    ctx.strokeStyle = `rgba(${Math.floor(0 + 123 * (1 - progress))}, ${Math.floor(212 * progress)}, 255, ${progress * 0.85})`;
+                    ctx.shadowColor = '#00d4ff';
+                    ctx.shadowBlur = progress * 14;
+                    ctx.stroke();
+
+                    if (i % 4 === 0 && i > 3) {
+                        ctx.beginPath();
+                        ctx.arc(p2.x, p2.y, progress * 2.2, 0, Math.PI * 2);
+                        ctx.fillStyle = '#00d4ff';
+                        ctx.shadowColor = '#00d4ff';
+                        ctx.shadowBlur = 10;
+                        ctx.fill();
+                    }
+                }
+            }
+
+            for (let i = sparkles.length - 1; i >= 0; i--) {
+                const s = sparkles[i];
+                s.x += s.vx;
+                s.y += s.vy;
+                s.alpha -= 0.038;
+                if (s.alpha <= 0) {
+                    sparkles.splice(i, 1);
+                    continue;
+                }
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fillStyle = s.color;
+                ctx.globalAlpha = Math.max(0, s.alpha);
+                ctx.shadowColor = s.color;
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+
+            if (currentMouse.active && points.length > 0) {
+                const head = points[points.length - 1];
+
+                ctx.beginPath();
+                ctx.arc(head.x, head.y, 6.5, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.4)';
+                ctx.shadowColor = '#00d4ff';
+                ctx.shadowBlur = 18;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(head.x, head.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 14;
+                ctx.fill();
+
+                ctx.lineWidth = 1.2;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+                ctx.beginPath();
+                ctx.moveTo(head.x - 6, head.y);
+                ctx.lineTo(head.x + 6, head.y);
+                ctx.moveTo(head.x, head.y - 6);
+                ctx.lineTo(head.x, head.y + 6);
+                ctx.stroke();
+            }
+
+            if (points.length > 0 && Math.random() > 0.4) {
+                points.shift();
+            }
+
+            requestAnimationFrame(renderShootingStar);
+        }
+        renderShootingStar();
+    } catch(err) {
+        console.log("Shooting star cursor initialized locally");
+    }
 </script>
 </body>
 </html>
 """
 
-components.html(threejs_canvas_html, height=230, scrolling=False)
+components.html(threejs_and_cursor_html, height=240, scrolling=False)
 
 # ============================================================
-# macOS LIGHT GLASSMORPHISM (WARM & HEARTWARMING APPLE THEME)
+# HIGH-END 3D FUTURISTIC CSS STYLING (DARK CYBER ENGINE)
 # ============================================================
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;800;900&family=Sora:wght@300;400;600;700&display=swap');
 
-/* ===== APPLE LIGHT MODE CANVAS ===== */
+/* ===== GLOBAL BACKGROUND & TYPOGRAPHY ===== */
 .stApp {
-    background: #fbfbfd !important;
-    background-image: 
-        radial-gradient(at 10% 10%, rgba(224, 242, 254, 0.7) 0px, transparent 60%),
-        radial-gradient(at 90% 15%, rgba(243, 232, 255, 0.6) 0px, transparent 55%),
-        radial-gradient(at 50% 85%, rgba(254, 242, 242, 0.6) 0px, transparent 60%),
-        radial-gradient(at 85% 80%, rgba(220, 252, 231, 0.5) 0px, transparent 50%) !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif !important;
-    color: #1d1d1f !important;
+    background: #03030c !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    color: #e0e0f5 !important;
+    cursor: crosshair !important;
 }
 
-/* Base text elements */
-p, span, label, div {
-    color: #1d1d1f;
+body, button, a, input, select {
+    cursor: crosshair !important;
 }
 
-/* ===== HERO WINDOW (APPLE GLASS CARD) ===== */
-.hero-window {
-    background: rgba(255, 255, 255, 0.75) !important;
-    backdrop-filter: blur(40px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.9) !important;
-    border-radius: 24px !important;
-    padding: 2.6rem 3rem !important;
-    margin-bottom: 2rem !important;
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.04),
-        0 1px 3px rgba(0, 0, 0, 0.02),
-        inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.hero-window:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-        0 26px 50px rgba(0, 113, 227, 0.08),
-        0 1px 4px rgba(0, 0, 0, 0.03) !important;
-}
-
-/* macOS Window Control Dots */
-.window-dots {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 1.2rem;
-}
-.dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-}
-.dot-red { background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
-.dot-yellow { background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
-.dot-green { background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); }
-.window-title {
-    font-size: 0.8rem;
-    color: #86868b;
-    font-weight: 500;
-    margin-left: 6px;
-    letter-spacing: 0.2px;
-}
-
-.hero-title {
-    font-size: 2.4rem;
-    font-weight: 700;
-    letter-spacing: -0.8px;
-    color: #1d1d1f;
-    margin-bottom: 0.4rem;
-}
-.hero-sub {
-    font-size: 1.05rem;
-    color: #515154;
-    font-weight: 400;
-    letter-spacing: 0.1px;
-}
-.hero-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 113, 227, 0.08);
-    border: 1px solid rgba(0, 113, 227, 0.2);
-    color: #0071e3;
-    padding: 6px 16px;
-    border-radius: 30px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    margin-top: 1.1rem;
-}
-
-/* ===== SECTION HEADERS ===== */
-.section-lbl {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1d1d1f;
-    margin: 2.2rem 0 1rem 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    letter-spacing: -0.4px;
-}
-
-/* ===== METRICS CARDS (WHITE FROSTED GLASS) ===== */
-[data-testid="stMetric"] {
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: blur(25px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.9) !important;
-    border-radius: 18px !important;
-    padding: 18px 22px !important;
-    box-shadow: 
-        0 10px 25px rgba(0, 0, 0, 0.03),
-        0 1px 2px rgba(0, 0, 0, 0.02),
-        inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-[data-testid="stMetric"]:hover {
-    transform: translateY(-2px) !important;
-    border-color: rgba(0, 113, 227, 0.35) !important;
-    box-shadow: 
-        0 16px 35px rgba(0, 113, 227, 0.08),
-        0 1px 3px rgba(0, 0, 0, 0.02) !important;
-}
-[data-testid="stMetricLabel"] {
-    color: #6e6e73 !important;
-    font-size: 0.82rem !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.1px !important;
-}
-[data-testid="stMetricValue"] {
-    color: #1d1d1f !important;
-    font-weight: 700 !important;
-    font-size: 1.75rem !important;
-    letter-spacing: -0.5px !important;
-}
-
-/* ===== RISK GAUGE CARDS (WARM GLASS) ===== */
-.risk-card-macos {
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(30px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 1.8rem;
-    text-align: center;
-    box-shadow: 
-        0 14px 30px rgba(0, 0, 0, 0.04),
-        0 1px 2px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s;
-}
-.risk-card-macos:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.07);
-}
-.risk-num-macos {
-    font-size: 3.6rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -1.5px;
-}
-.risk-sub-macos {
-    color: #6e6e73;
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-top: 0.4rem;
-}
-
-/* ===== ACCENT BADGES (WARM & REFINED) ===== */
-.macos-badge {
-    display: inline-block;
-    padding: 6px 20px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: 0.2px;
-}
-.badge-crit { background: rgba(255, 59, 48, 0.12); color: #d70015; border: 1px solid rgba(255, 59, 48, 0.25); }
-.badge-hgh { background: rgba(255, 149, 0, 0.12); color: #c93400; border: 1px solid rgba(255, 149, 0, 0.25); }
-.badge-med { background: rgba(255, 204, 0, 0.16); color: #a05a00; border: 1px solid rgba(255, 204, 0, 0.3); }
-.badge-low { background: rgba(52, 199, 89, 0.12); color: #1a883a; border: 1px solid rgba(52, 199, 89, 0.25); }
-
-/* ===== STAGE FLOW ===== */
-.macos-flow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    background: rgba(255, 255, 255, 0.8);
+/* ===== 3D GLASSMORPHISM PANELS ===== */
+.glass-panel {
+    background: rgba(12, 12, 32, 0.7) !important;
     backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    border-radius: 18px;
-    padding: 18px 28px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
-    flex-wrap: wrap;
-}
-.flow-chip {
-    padding: 10px 22px;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-.chip-curr { background: rgba(0, 113, 227, 0.1); color: #0071e3; border: 1px solid rgba(0, 113, 227, 0.25); }
-.chip-pred { background: rgba(255, 59, 48, 0.1); color: #d70015; border: 1px solid rgba(255, 59, 48, 0.25); }
-.chip-arrow { color: #86868b; font-size: 1.2rem; font-weight: 600; }
-
-/* ===== TABS & TABLES ===== */
-.stTabs [data-baseweb="tab-list"] { gap: 8px; }
-.stTabs [data-baseweb="tab"] {
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 12px;
-    color: #515154;
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 8px 18px;
-    transition: all 0.2s;
-}
-.stTabs [aria-selected="true"] {
-    background: #0071e3 !important;
-    color: #ffffff !important;
-    border-color: #0071e3 !important;
-    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
-}
-
-[data-testid="stDataFrame"] {
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: 1px solid rgba(0, 0, 0, 0.06) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(0, 212, 255, 0.15) !important;
+    border-radius: 24px !important;
+    padding: 2rem !important;
+    margin-bottom: 1.5rem !important;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
     overflow: hidden;
 }
 
-/* ===== FILE UPLOADER ===== */
-[data-testid="stFileUploader"] {
-    background: rgba(255, 255, 255, 0.75) !important;
-    border: 2px dashed rgba(0, 113, 227, 0.25) !important;
-    border-radius: 18px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+.glass-panel:hover {
+    transform: translateY(-5px) perspective(1000px) rotateX(1.5deg) scale(1.006);
+    border-color: rgba(0, 212, 255, 0.4) !important;
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.6),
+        0 0 45px rgba(0, 212, 255, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
-/* ===== EXPANDER ===== */
-.streamlit-expanderHeader {
-    background: rgba(255, 255, 255, 0.75) !important;
-    border-radius: 12px !important;
-    color: #1d1d1f !important;
+/* ===== 3D HERO BANNER ===== */
+.hero-container {
+    background: linear-gradient(135deg, rgba(8, 8, 26, 0.95), rgba(18, 18, 48, 0.85));
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 28px;
+    padding: 2.8rem 3.5rem;
+    margin-bottom: 2.2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 30px 90px rgba(0,0,0,0.6),
+        0 0 70px rgba(0, 212, 255, 0.08),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    animation: heroFloating 7s ease-in-out infinite;
+}
+@keyframes heroFloating {
+    0%, 100% { transform: translateY(0px) rotateX(0deg); }
+    50% { transform: translateY(-5px) rotateX(0.8deg); }
+}
+
+.hero-title-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 3.1rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #00d4ff 0%, #7b2ff7 35%, #ff006e 70%, #00d4ff 100%);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShimmer 5s ease infinite;
+    letter-spacing: 2px;
+    margin-bottom: 0.4rem;
+}
+@keyframes gradientShimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.hero-subtitle-text {
+    font-family: 'Sora', sans-serif;
+    color: rgba(160, 160, 220, 0.9);
+    font-size: 1.15rem;
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.hero-tag-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(123, 47, 247, 0.35), rgba(0, 212, 255, 0.35));
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    color: #00d4ff;
+    padding: 6px 22px;
+    border-radius: 30px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-top: 1.2rem;
+    text-transform: uppercase;
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
+}
+
+/* ===== HOLOGRAPHIC SECTION HEADERS ===== */
+.cyber-hdr {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: transparent;
+    background: linear-gradient(90deg, #00d4ff, #7b2ff7, #00d4ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    animation: holoText 4s linear infinite;
+    padding: 12px 22px;
+    border-left: 4px solid #00d4ff;
+    margin: 2.2rem 0 1.4rem 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background-color: rgba(0, 212, 255, 0.03);
+    border-radius: 0 12px 12px 0;
+}
+@keyframes holoText {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* ===== 3D METRICS CARDS ===== */
+[data-testid="stMetric"] {
+    background: rgba(12, 12, 32, 0.75) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 212, 255, 0.12) !important;
+    border-radius: 20px !important;
+    padding: 22px 26px !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+}
+[data-testid="stMetric"]:hover {
+    transform: translateY(-5px) perspective(600px) rotateX(3deg);
+    border-color: rgba(0, 212, 255, 0.35) !important;
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.5),
+        0 0 35px rgba(0, 212, 255, 0.1) !important;
+}
+[data-testid="stMetricLabel"] {
+    color: rgba(140, 140, 200, 0.85) !important;
+    font-family: 'Sora', sans-serif !important;
+    font-size: 0.8rem !important;
     font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+}
+[data-testid="stMetricValue"] {
+    font-family: 'Orbitron', monospace !important;
+    font-weight: 800 !important;
+    font-size: 1.75rem !important;
+    background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* ===== SIDEBAR ===== */
-section[data-testid="stSidebar"] {
-    background: rgba(245, 245, 247, 0.92) !important;
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(40px);
-}
-section[data-testid="stSidebar"] * {
-    color: #1d1d1f;
-}
-
-/* ===== FOOTER ===== */
-.footer-macos {
+/* ===== 3D RISK GAUGE DISPLAYS ===== */
+.gauge-box-3d {
+    background: rgba(12, 12, 32, 0.75);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 24px;
+    padding: 2.2rem;
     text-align: center;
-    padding: 2.5rem 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.gauge-box-3d:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(0,212,255,0.08);
+}
+.gauge-num-3d {
+    font-family: 'Orbitron', monospace;
+    font-size: 4.2rem;
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: 0 0 35px currentColor;
+}
+.gauge-sub-lbl {
+    font-family: 'Sora', sans-serif;
+    color: rgba(130, 130, 190, 0.8);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-top: 0.6rem;
+}
+.bar-track-3d {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin-top: 1.2rem;
+    overflow: hidden;
+    position: relative;
+}
+.bar-fill-3d {
+    height: 100%;
+    border-radius: 4px;
+    position: relative;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bar-fill-3d::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+    animation: fillShimmer 2.2s infinite;
+}
+@keyframes fillShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* ===== NEON RISK BADGES ===== */
+.badge-neon {
+    display: inline-block;
+    padding: 12px 32px;
+    border-radius: 35px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+.badge-critical {
+    background: linear-gradient(135deg, #ff1744, #d50000);
+    color: white;
+    box-shadow: 0 0 25px rgba(255,23,68,0.5), 0 0 70px rgba(255,23,68,0.2);
+    animation: criticalPulse 1.5s ease-in-out infinite;
+}
+.badge-high {
+    background: linear-gradient(135deg, #ff6d00, #e65100);
+    color: white;
+    box-shadow: 0 0 25px rgba(255,109,0,0.4), 0 0 50px rgba(255,109,0,0.15);
+}
+.badge-medium {
+    background: linear-gradient(135deg, #ffab00, #ff8f00);
+    color: #111;
+    box-shadow: 0 0 25px rgba(255,171,0,0.4), 0 0 50px rgba(255,171,0,0.15);
+}
+.badge-low {
+    background: linear-gradient(135deg, #00e676, #00c853);
+    color: #111;
+    box-shadow: 0 0 25px rgba(0,230,118,0.4), 0 0 50px rgba(0,230,118,0.15);
+}
+@keyframes criticalPulse {
+    0%, 100% { box-shadow: 0 0 25px rgba(255,23,68,0.5); }
+    50% { box-shadow: 0 0 50px rgba(255,23,68,0.8), 0 0 90px rgba(255,23,68,0.3); }
+}
+
+/* ===== STAGE PIPELINE ===== */
+.pipeline-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 24px 35px;
+    background: rgba(12, 12, 32, 0.7);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(0, 212, 255, 0.12);
+    border-radius: 24px;
+    flex-wrap: wrap;
+}
+.node-chip {
+    padding: 14px 32px;
+    border-radius: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+}
+.node-curr {
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    color: white;
+    border: 1px solid rgba(66, 165, 245, 0.6);
+    box-shadow: 0 0 30px rgba(21, 101, 192, 0.4);
+}
+.node-pred {
+    background: linear-gradient(135deg, #c62828, #b71c1c);
+    color: white;
+    border: 1px solid rgba(239, 83, 80, 0.6);
+    box-shadow: 0 0 30px rgba(198, 40, 40, 0.4);
+    animation: targetPulse 2s ease-in-out infinite;
+}
+@keyframes targetPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(198, 40, 40, 0.4); }
+    50% { box-shadow: 0 0 50px rgba(198, 40, 40, 0.7); }
+}
+.node-arrow {
+    color: #7b2ff7;
+    font-size: 1.8rem;
+    padding: 0 20px;
+    font-family: monospace;
+    text-shadow: 0 0 15px rgba(123, 47, 247, 0.6);
+}
+
+/* ===== TABS & DATAFRAMES ===== */
+.stTabs [data-baseweb="tab-list"] { gap: 10px; }
+.stTabs [data-baseweb="tab"] {
+    background: rgba(12, 12, 32, 0.7);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 212, 255, 0.12);
+    border-radius: 14px;
+    color: rgba(160, 160, 220, 0.85);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    padding: 10px 24px;
+    transition: all 0.3s;
+}
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(123, 47, 247, 0.5), rgba(0, 212, 255, 0.3)) !important;
+    color: white !important;
+    border-color: rgba(123, 47, 247, 0.6) !important;
+    box-shadow: 0 0 25px rgba(123, 47, 247, 0.25);
+}
+
+[data-testid="stDataFrame"] {
+    border: 1px solid rgba(0, 212, 255, 0.1) !important;
+    border-radius: 16px !important;
+    overflow: hidden;
+}
+
+/* ===== SIDEBAR & FOOTER ===== */
+section[data-testid="stSidebar"] {
+    background: rgba(4, 4, 14, 0.96) !important;
+    border-right: 1px solid rgba(0, 212, 255, 0.1);
+    backdrop-filter: blur(25px);
+}
+
+.footer-3d {
+    text-align: center;
+    padding: 3rem 1rem;
     margin-top: 3.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    color: #86868b;
+    border-top: 1px solid rgba(0, 212, 255, 0.1);
+    position: relative;
+}
+.footer-3d-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    color: rgba(0, 212, 255, 0.7);
+    letter-spacing: 3px;
+    margin-bottom: 0.6rem;
+}
+.footer-3d-text {
+    font-family: 'Sora', sans-serif;
+    color: rgba(120, 120, 170, 0.6);
     font-size: 0.82rem;
+    letter-spacing: 1px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -441,10 +685,10 @@ section[data-testid="stSidebar"] * {
 # ============================================================
 with st.sidebar:
     st.markdown("""
-    <div style="padding: 1rem 0; text-align: center;">
-        <div style="font-size: 3rem; margin-bottom: 0.4rem;">🛡️</div>
-        <div style="font-size: 1.18rem; font-weight: 700; color: #1d1d1f; letter-spacing: -0.3px;">CyberShield AI</div>
-        <div style="font-size: 0.78rem; color: #6e6e73; margin-top: 0.2rem;">Threat Forecasting System</div>
+    <div style="text-align:center; padding: 1.5rem 0;">
+        <div style="font-size: 3.8rem; filter: drop-shadow(0 0 20px rgba(0,212,255,0.4));">🛡️</div>
+        <div style="font-family: 'Orbitron', monospace; font-size: 1.15rem; font-weight: 900; background: linear-gradient(135deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.5rem; letter-spacing: 2px;">AI BASED NETWORK ATTACK FORECASTING</div>
+        <div style="font-family: 'Sora', sans-serif; color: rgba(120,120,180,0.6); font-size: 0.7rem; letter-spacing: 3px; margin-top: 0.2rem;">FROM NETWORK TRAFFIC DATA</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -460,38 +704,32 @@ Framework: PyTorch
 Validation Loss: 0.0773""", language="yaml")
 
     st.markdown("---")
-    st.markdown("#### 🗄️ Knowledge Bases")
+    st.markdown("#### 🗄️ Connected Knowledge Bases")
     st.markdown("```\n[ONLINE] MITRE ATT&CK v14\n[ONLINE] CAPEC Patterns v3.9\n[ONLINE] CVE/NVD Context Feed\n```")
 
     st.markdown("---")
     st.markdown("#### 📡 Pipeline Architecture")
-    for phase in ["P1 Data Preprocessing", "P2 Temporal States", "P3 PyTorch LSTM Model", "P4 Threat Forecasting", "P5 Evaluation & XAI", "P6 SOC Dashboard"]:
+    for phase in ["P1 Data Preprocessing", "P2 Temporal States", "P3 PyTorch LSTM Model", "P4 Threat Forecasting", "P5 Evaluation & XAI", "P6 3D SOC Dashboard"]:
         st.markdown(f"🟢 **{phase}**")
 
     st.markdown("---")
     st.caption("Smart India Hackathon 2026 Submission")
 
 # ============================================================
-# HERO WINDOW (HEARTWARMING MACOS GLASS)
+# HERO BANNER
 # ============================================================
 st.markdown("""
-<div class="hero-window">
-    <div class="window-dots">
-        <span class="dot dot-red"></span>
-        <span class="dot dot-yellow"></span>
-        <span class="dot dot-green"></span>
-        <span class="window-title">CyberShield — Network Intelligence &amp; 3D Engine</span>
-    </div>
-    <div class="hero-title">AI based Network Attack Forecasting</div>
-    <div class="hero-sub">From Network Traffic Data // Proactive Cyber Threat Intelligence</div>
-    <div class="hero-tag">SIH26153 • Theme: Blockchain &amp; Cybersecurity • Category: Software</div>
+<div class="hero-container">
+    <div class="hero-title-text">AI BASED NETWORK ATTACK FORECASTING</div>
+    <div class="hero-subtitle-text">FROM NETWORK TRAFFIC DATA // PROACTIVE CYBER THREAT INTELLIGENCE</div>
+    <div class="hero-tag-pill">SIH26153 // THEME: BLOCKCHAIN &amp; CYBERSECURITY // CATEGORY: SOFTWARE</div>
 </div>
 """, unsafe_allow_html=True)
 
 # ============================================================
 # DATA INGESTION
 # ============================================================
-st.markdown('<div class="section-lbl">📡 Network Traffic Ingestion</div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-hdr">📡 Network Traffic Ingestion Engine</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
     "Drag and drop or browse a network traffic CSV file",
@@ -521,7 +759,7 @@ else:
 # ============================================================
 # NETWORK OVERVIEW METRICS
 # ============================================================
-st.markdown('<div class="section-lbl">📊 Network Situation Awareness</div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-hdr">📊 Network Situation Awareness</div>', unsafe_allow_html=True)
 
 if data is not None:
     total_flows = len(data)
@@ -544,7 +782,7 @@ if data is not None:
         st.markdown("##### 📈 Flow Volume Telemetry")
         st.area_chart(data[["Packets", "Bytes"]].reset_index(drop=True), use_container_width=True)
     with cb:
-        st.markdown("##### 🎯 Threat Composition")
+        st.markdown("##### 🎯 Threat Ratio Breakdown")
         st.bar_chart(pd.DataFrame({"Category": ["Benign", "Attack"], "Count": [benign, atk]}).set_index("Category"), use_container_width=True)
 else:
     for c, l in zip(st.columns(5), ["Total Flows", "Source IPs", "Dest IPs", "Attack Flows", "Threat Ratio"]):
@@ -553,7 +791,7 @@ else:
 # ============================================================
 # THREAT FORECAST & RISK ASSESSMENT
 # ============================================================
-st.markdown('<div class="section-lbl">🔮 Threat Forecast &amp; Risk Engine</div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-hdr">🔮 Threat Forecast &amp; Dynamic Risk Engine</div>', unsafe_allow_html=True)
 
 if data is not None and forecast_data is not None:
     ap = forecast_data.get("attack_probability", 0)
@@ -563,49 +801,52 @@ if data is not None and forecast_data is not None:
     ps = forecast_data.get("predicted_stage", "N/A")
     mc = forecast_data.get("model_confidence", 0)
 
-    color_map = {"CRITICAL": "#d70015", "HIGH": "#c93400", "MEDIUM": "#a05a00", "LOW": "#1a883a"}
-    badge_map = {"CRITICAL": "badge-crit", "HIGH": "badge-hgh", "MEDIUM": "badge-med", "LOW": "badge-low"}
-    gc = color_map.get(rl, "#a05a00")
-    bc = badge_map.get(rl, "badge-med")
+    color_map = {"CRITICAL": "#ff1744", "HIGH": "#ff6d00", "MEDIUM": "#ffab00", "LOW": "#00e676"}
+    badge_map = {"CRITICAL": "badge-critical", "HIGH": "badge-high", "MEDIUM": "badge-medium", "LOW": "badge-low"}
+    gc = color_map.get(rl, "#ffab00")
+    bc = badge_map.get(rl, "badge-medium")
 
     g1, g2, g3 = st.columns(3)
 
     with g1:
         st.markdown(f"""
-        <div class="risk-card-macos">
-            <div class="risk-sub-macos">Threat Risk Score</div>
-            <div class="risk-num-macos" style="color: {gc};">{rs:.1f}</div>
-            <div class="risk-sub-macos">Scale 0 — 100</div>
+        <div class="gauge-box-3d">
+            <div class="gauge-sub-lbl">Threat Risk Score</div>
+            <div class="gauge-num-3d" style="color: {gc};">{rs:.1f}</div>
+            <div class="gauge-sub-lbl">Scale 0 — 100</div>
+            <div class="bar-track-3d"><div class="bar-fill-3d" style="width:{rs}%; background: linear-gradient(90deg, {gc}, {gc}88);"></div></div>
         </div>
         """, unsafe_allow_html=True)
 
     with g2:
         st.markdown(f"""
-        <div class="risk-card-macos">
-            <div class="risk-sub-macos">Risk Classification</div>
-            <div style="margin: 14px 0;"><span class="macos-badge {bc}">{rl}</span></div>
-            <div class="risk-sub-macos">Attack Probability: <strong style="color: #1d1d1f;">{ap * 100:.0f}%</strong></div>
+        <div class="gauge-box-3d">
+            <div class="gauge-sub-lbl">Risk Classification</div>
+            <div style="margin: 16px 0;"><span class="badge-neon {bc}">{rl}</span></div>
+            <div class="gauge-sub-lbl">Predicted Attack Probability</div>
+            <div class="gauge-num-3d" style="color: {gc}; font-size: 2.8rem;">{ap * 100:.0f}%</div>
         </div>
         """, unsafe_allow_html=True)
 
     with g3:
         st.markdown(f"""
-        <div class="risk-card-macos">
-            <div class="risk-sub-macos">Model Confidence</div>
-            <div class="risk-num-macos" style="color: #0071e3; font-size: 3.2rem;">{mc * 100:.0f}%</div>
-            <div class="risk-sub-macos">PyTorch Stacked LSTM</div>
+        <div class="gauge-box-3d">
+            <div class="gauge-sub-lbl">Model Confidence</div>
+            <div class="gauge-num-3d" style="color: #7b2ff7; font-size: 2.8rem;">{mc * 100:.0f}%</div>
+            <div class="gauge-sub-lbl">PyTorch LSTM World Model</div>
+            <div class="bar-track-3d"><div class="bar-fill-3d" style="width:{mc*100}%; background: linear-gradient(90deg, #7b2ff7, #7b2ff788);"></div></div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("")
 
-    # Attack Stage Flow
-    st.markdown("##### ⚔️ Attack Stage Progression")
+    # Attack Stage Pipeline
+    st.markdown("##### ⚔️ Attack Kill Chain Progression")
     st.markdown(f"""
-    <div class="macos-flow">
-        <div class="flow-chip chip-curr">📍 Current Stage: {cs}</div>
-        <div class="chip-arrow">→</div>
-        <div class="flow-chip chip-pred">🎯 Predicted Stage: {ps}</div>
+    <div class="pipeline-flow">
+        <div class="node-chip node-curr">📍 Current Stage: {cs}</div>
+        <div class="node-arrow">▸ ▸ ▸</div>
+        <div class="node-chip node-pred">🎯 Predicted Stage: {ps}</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -636,7 +877,7 @@ else:
 # ============================================================
 # MITRE ATT&CK & CAPEC INTELLIGENCE
 # ============================================================
-st.markdown('<div class="section-lbl">🗺️ Threat Intelligence Matrix (MITRE &amp; CAPEC)</div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-hdr">🗺️ MITRE ATT&CK &amp; CAPEC Intelligence Matrix</div>', unsafe_allow_html=True)
 
 if data is not None and forecast_data is not None:
     mitre = forecast_data.get("mitre_techniques", {})
@@ -663,7 +904,7 @@ if data is not None and forecast_data is not None:
 
     vuln = forecast_data.get("vulnerability_context", [])
     if vuln:
-        with st.expander("🔒 Interactive CVE/NVD Vulnerability Feed", expanded=True):
+        with st.expander("🔒 Interactive CVE/NVD Vulnerability Context Feed (Official NVD Links)", expanded=True):
             for v in vuln:
                 cve_id = v.get("cve_id", "N/A")
                 cvss = v.get("cvss", 10.0)
@@ -672,14 +913,14 @@ if data is not None and forecast_data is not None:
                 note = v.get("note", "")
 
                 st.markdown(f"""
-                <div style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(255, 59, 48, 0.25); border-radius: 14px; padding: 14px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                <div style="background: rgba(12,12,32,0.8); border: 1px solid rgba(255,23,68,0.3); border-radius: 12px; padding: 12px 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 250px;">
-                        <span style="font-weight: 700; color: #d70015; font-size: 1.05rem;">{cve_id}</span>
-                        <span style="background: rgba(255, 59, 48, 0.1); color: #d70015; border: 1px solid rgba(255,59,48,0.25); padding: 3px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin-left: 10px;">{severity} (CVSS {cvss})</span>
-                        <div style="color: #515154; font-size: 0.88rem; margin-top: 5px;">{note}</div>
+                        <span style="font-family: 'Orbitron', monospace; font-size: 1rem; color: #ff1744; font-weight: 800;">{cve_id}</span>
+                        <span style="background: #ff1744; color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-left: 10px;">{severity} (CVSS {cvss})</span>
+                        <div style="color: #bbb; font-size: 0.88rem; margin-top: 4px;">{note}</div>
                     </div>
-                    <div style="margin-top: 8px;">
-                        <a href="{url}" target="_blank" style="display: inline-block; background: rgba(0, 113, 227, 0.1); color: #0071e3; border: 1px solid rgba(0, 113, 227, 0.25); padding: 6px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; text-decoration: none;">🔗 View on NVD NIST →</a>
+                    <div style="margin-top: 6px;">
+                        <a href="{url}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #7b2ff7, #00d4ff); color: white; padding: 6px 16px; border-radius: 8px; font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 700; text-decoration: none; box-shadow: 0 0 15px rgba(0,212,255,0.2);">🔗 View on NVD NIST →</a>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -689,7 +930,7 @@ else:
 # ============================================================
 # EXPLAINABILITY & FEATURE ATTRIBUTION
 # ============================================================
-st.markdown('<div class="section-lbl">🔬 Explainability &amp; Feature Attribution</div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-hdr">🔬 Explainability &amp; Feature Attribution</div>', unsafe_allow_html=True)
 
 if importance_data is not None:
     fl = importance_data.get("features", [])
@@ -711,7 +952,7 @@ else:
 # ============================================================
 # MODEL PERFORMANCE BENCHMARKS
 # ============================================================
-st.markdown('<div class="section-lbl">📈 Model Performance Benchmarks</div>', unsafe_allow_html=True)
+st.markdown('<div class="cyber-hdr">📈 Model Performance Benchmarks</div>', unsafe_allow_html=True)
 
 if metrics_data is not None:
     m = metrics_data.get("metrics", {})
@@ -736,9 +977,11 @@ else:
 # FOOTER
 # ============================================================
 st.markdown("""
-<div class="footer-macos">
-    <strong>AI BASED NETWORK ATTACK FORECASTING FROM NETWORK TRAFFIC DATA</strong><br>
-    Smart India Hackathon 2026 | Problem Statement Id: SIH26153 | Theme: Blockchain &amp; Cybersecurity | Category: Software<br>
-    Dataset: CIC-IDS2017 (2.57M Flows) | Deep Learning Core: PyTorch Stacked LSTM | Knowledge Bases: MITRE ATT&CK &amp; CAPEC &amp; CVE/NVD
+<div class="footer-3d">
+    <div class="footer-3d-title">AI BASED NETWORK ATTACK FORECASTING FROM NETWORK TRAFFIC DATA</div>
+    <div class="footer-3d-text">
+        Smart India Hackathon 2026 | Problem Statement Id: SIH26153 | Theme: Blockchain &amp; Cybersecurity | Category: Software<br>
+        Dataset: CIC-IDS2017 (2.57M Flows) | Deep Learning Core: PyTorch Stacked LSTM | Knowledge Bases: MITRE ATT&CK &amp; CAPEC &amp; CVE/NVD
+    </div>
 </div>
 """, unsafe_allow_html=True)
