@@ -37,6 +37,126 @@ if importance_file.exists():
     except Exception:
         importance_data = None
 
+import torch
+import torch.nn as nn
+
+class LSTMWorldModel(nn.Module):
+    def __init__(self, input_size=4, hidden_size=128, num_layers=2, dropout=0.2):
+        super().__init__()
+        self.lstm = nn.LSTM(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            batch_first=True,
+            dropout=dropout if num_layers > 1 else 0.0
+        )
+        self.future_state_head = nn.Sequential(
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, input_size)
+        )
+        self.attack_head = nn.Sequential(
+            nn.Linear(hidden_size, hidden_size // 2),
+            nn.ReLU(),
+            nn.Linear(hidden_size // 2, 1)
+        )
+
+    def forward(self, x):
+        lstm_out, _ = self.lstm(x)
+        last_hidden = lstm_out[:, -1, :]
+        return self.future_state_head(last_hidden), self.attack_head(last_hidden).squeeze(-1)
+
+@st.cache_resource
+def load_lstm_world_model():
+    model_path = BASE_DIR / "P3_lstm" / "model.pth"
+    if not model_path.exists():
+        return None, None, None
+    try:
+        ckpt = torch.load(str(model_path), map_location="cpu", weights_only=False)
+        m = LSTMWorldModel(
+            input_size=ckpt["input_size"],
+            hidden_size=ckpt.get("hidden_size", 128),
+            num_layers=ckpt.get("num_layers", 2),
+            dropout=ckpt.get("dropout", 0.2)
+        )
+        m.load_state_dict(ckpt["model_state_dict"])
+        m.eval()
+        f_mean = np.array(ckpt.get("feature_mean", [1.13, 2.34, 227.2, 227.2]), dtype=np.float32)
+        f_std = np.array(ckpt.get("feature_std", [69.6, 92.7, 195.2, 195.2]), dtype=np.float32)
+        return m, f_mean, f_std
+    except Exception:
+        return None, None, None
+
+def compute_lstm_forecast_drift(df, model, f_mean, f_std):
+    """
+    Computes real percent drift from trained PyTorch LSTM World Model rollouts.
+    Constructs 5 sequential temporal states from the uploaded telemetry,
+    normalizes using the training checkpoint stats (f_mean, f_std),
+    performs recursive/iterative forecasting, denormalizes with (f_mean, f_std),
+    and calculates:
+        drift_pct = (predicted_packet_count - current_packet_count) / current_packet_count * 100
+    """
+    if model is None or df is None or len(df) == 0:
+        return {"+1h": "+0.0% Packet Change", "+6h": "+0.0% Packet Change", "+24h": "+0.0% Packet Change"}
+
+    if f_mean is None or f_std is None:
+        f_mean = np.array([1.13, 2.34, 227.2, 227.2], dtype=np.float32)
+        f_std = np.array([69.6, 92.7, 195.2, 195.2], dtype=np.float32)
+
+    n = len(df)
+    chunk_size = max(1, n // 5)
+
+    # Standardize flow-level packets & bytes relative to upload (matching P1 preprocessing)
+    p_mean = float(df["Packets"].mean()) if "Packets" in df else 10.0
+    p_std = float(df["Packets"].std()) if "Packets" in df and df["Packets"].std() > 1e-4 else 1.0
+    b_mean = float(df["Bytes"].mean()) if "Bytes" in df else 1000.0
+    b_std = float(df["Bytes"].std()) if "Bytes" in df and df["Bytes"].std() > 1e-4 else 1.0
+
+    states = []
+    chunk_raw_pkts = []
+    for i in range(5):
+        chunk = df.iloc[i * chunk_size : (i + 1) * chunk_size] if i < 4 else df.iloc[i * chunk_size :]
+        c_len = max(len(chunk), 1)
+        scale = 1000.0 / c_len
+
+        pkts_raw = float(chunk["Packets"].sum()) if "Packets" in chunk else 10.0 * c_len
+        chunk_raw_pkts.append(pkts_raw)
+
+        # Standardized sum scaled to 1000-flow window (matching P2 temporal state construction)
+        pkts_norm_sum = float(((chunk["Packets"] - p_mean) / p_std).sum()) * scale if "Packets" in chunk else 0.0
+        bytes_norm_sum = float(((chunk["Bytes"] - b_mean) / b_std).sum()) * scale if "Bytes" in chunk else 0.0
+        u_src = float(chunk["Source_IP"].nunique()) * scale if "Source_IP" in chunk else 1.0 * scale
+        u_dst = float(chunk["Destination_IP"].nunique()) * scale if "Destination_IP" in chunk else 1.0 * scale
+        states.append([pkts_norm_sum, bytes_norm_sum, u_src, u_dst])
+
+    seq = np.array(states, dtype=np.float32)
+    current_packet_count = max(chunk_raw_pkts[-1], 1e-5)
+
+    # Normalize state sequence using training checkpoint stats (f_mean, f_std)
+    norm_seq = (seq - f_mean) / f_std
+
+    curr = norm_seq.copy()
+    drifts = {}
+    last_c_len = max(len(df.iloc[4 * chunk_size :]), 1)
+
+    with torch.no_grad():
+        for step in range(1, 25):
+            inp = torch.tensor(curr, dtype=torch.float32).unsqueeze(0)
+            pred_state_norm, _ = model(inp)
+            pred_norm = pred_state_norm.cpu().numpy()[0]
+
+            curr = np.vstack([curr[1:], pred_norm])
+
+            if step in [1, 6, 24]:
+                # Denormalize using training checkpoint stats (f_mean, f_std)
+                pred_actual = pred_norm * f_std + f_mean
+                # Map standardized predicted window sum back to upload packet scale
+                predicted_packet_count = (float(pred_actual[0]) / 1000.0 * last_c_len) * p_std + p_mean * last_c_len
+                drift_pct = (predicted_packet_count - current_packet_count) / current_packet_count * 100.0
+                drifts[f"+{step}h"] = f"{drift_pct:+.1f}% Packet Change"
+
+    return drifts
+
 # ============================================================
 # PAGE CONFIG
 # ============================================================
@@ -987,7 +1107,7 @@ if data is not None:
         cs = "Baseline Network Telemetry Monitoring"
         ps = "Normal Network Steady-State Operation"
 
-    # Dynamic Multi-Horizon Forecast Timeline (+1h, +6h, +24h)
+    # Rule-based heuristic risk scoring combining threat ratio and forecast probability (heuristic - not direct LSTM output)
     h1_p = min(0.99, max(0.06, ap * (1.08 if threat_ratio > 0.1 else 0.92)))
     h1_s = min(99.0, max(5.0, h1_p * 65.0 + threat_ratio * 35.0))
     h1_lvl = "CRITICAL" if h1_s >= 75 else ("HIGH" if h1_s >= 50 else ("MEDIUM" if h1_s >= 25 else "LOW"))
@@ -997,18 +1117,21 @@ if data is not None:
     h6_lvl = "CRITICAL" if h6_s >= 75 else ("HIGH" if h6_s >= 50 else ("MEDIUM" if h6_s >= 25 else "LOW"))
 
     h24_p = min(0.95, max(0.04, ap * 0.65))
+    # Heuristic combination of scaled forecast probability and threat ratio for long-term horizon
     h24_s = min(95.0, max(5.0, h24_p * 65.0 + (threat_ratio * 0.4) * 35.0))
     h24_lvl = "CRITICAL" if h24_s >= 75 else ("HIGH" if h24_s >= 50 else ("MEDIUM" if h24_s >= 25 else "LOW"))
 
-    # Compute forward state trajectory projections from LSTM dynamics
-    h1_drift = "+8.2% Packet Surge" if threat_ratio > 0.05 else "+1.1% Normal Variance"
-    h6_drift = "+28.4% Volumetric Expansion" if threat_ratio > 0.05 else "-0.8% Steady State"
-    h24_drift = "Baseline Stabilization (-35%)" if threat_ratio > 0.05 else "Normal Baseline Traffic"
+    # Compute real forecasted state drift from trained PyTorch LSTM model rollouts (no hardcoded strings)
+    lstm_m, lstm_fmean, lstm_fstd = load_lstm_world_model()
+    lstm_drifts = compute_lstm_forecast_drift(data, lstm_m, lstm_fmean, lstm_fstd)
+    h1_drift = lstm_drifts.get("+1h", "+0.0% Packet Change")
+    h6_drift = lstm_drifts.get("+6h", "+0.0% Packet Change")
+    h24_drift = lstm_drifts.get("+24h", "+0.0% Packet Change")
 
     dynamic_timeline = [
-        {"Horizon": "+1h", "LSTM State Trajectory": h1_drift, "Risk Engine Threat Likelihood": f"{h1_p * 100:.0f}%", "Risk Score": round(h1_s, 1), "Risk Level": h1_lvl},
-        {"Horizon": "+6h", "LSTM State Trajectory": h6_drift, "Risk Engine Threat Likelihood": f"{h6_p * 100:.0f}%", "Risk Score": round(h6_s, 1), "Risk Level": h6_lvl},
-        {"Horizon": "+24h", "LSTM State Trajectory": h24_drift, "Risk Engine Threat Likelihood": f"{h24_p * 100:.0f}%", "Risk Score": round(h24_s, 1), "Risk Level": h24_lvl}
+        {"Horizon": "+1h", "LSTM State Trajectory": h1_drift, "Heuristic Threat Likelihood": f"{h1_p * 100:.0f}%", "Heuristic Risk Score": round(h1_s, 1), "Risk Level": h1_lvl},
+        {"Horizon": "+6h", "LSTM State Trajectory": h6_drift, "Heuristic Threat Likelihood": f"{h6_p * 100:.0f}%", "Heuristic Risk Score": round(h6_s, 1), "Risk Level": h6_lvl},
+        {"Horizon": "+24h", "LSTM State Trajectory": h24_drift, "Heuristic Threat Likelihood": f"{h24_p * 100:.0f}%", "Heuristic Risk Score": round(h24_s, 1), "Risk Level": h24_lvl}
     ]
 
     color_map = {"CRITICAL": "#ff1744", "HIGH": "#ff6d00", "MEDIUM": "#ffab00", "LOW": "#00e676"}
@@ -1035,7 +1158,7 @@ if data is not None:
             <div style="margin: 16px 0;"><span class="badge-neon {bc}">{rl}</span></div>
             <div class="gauge-sub-lbl">Estimated Threat Likelihood</div>
             <div class="gauge-num-3d" style="color: {gc}; font-size: 2.8rem;">{ap * 100:.0f}%</div>
-            <div class="gauge-sub-lbl" style="font-size: 0.72rem; color: #94a3b8;">Risk Engine (P4) Evaluation</div>
+            <div class="gauge-sub-lbl" style="font-size: 0.72rem; color: #94a3b8;">Heuristic Risk Engine Evaluation</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1067,13 +1190,13 @@ if data is not None:
 
     # Dynamic Forecast Timeline
     st.markdown("##### 📅 Multi-Horizon Forecast Timeline")
-    st.caption("🛡️ **Scientific Architecture Note:** PyTorch LSTM acts as an environment simulator forecasting forward state dynamics ($P(S_{t+1}|S_t)$, Test MSE: 0.077). Multi-horizon likelihoods are evaluated by the Dynamic Risk Engine (P4) across simulated state trajectories.")
+    st.caption("🛡️ **Model vs. Heuristic Breakdown:** 'LSTM State Trajectory' displays real forecasted percent drift from recursive PyTorch LSTM forward rollouts ($P(S_{t+1}|S_t)$). 'Heuristic Threat Likelihood' and 'Heuristic Risk Score' are rule-based assessments combining threat ratio and burst dynamics.")
     st.dataframe(pd.DataFrame(dynamic_timeline), use_container_width=True, hide_index=True)
 
     timeline_chart_df = pd.DataFrame([
-        {"Horizon": "+1h", "Risk Score": h1_s, "Threat Likelihood %": h1_p * 100},
-        {"Horizon": "+6h", "Risk Score": h6_s, "Threat Likelihood %": h6_p * 100},
-        {"Horizon": "+24h", "Risk Score": h24_s, "Threat Likelihood %": h24_p * 100}
+        {"Horizon": "+1h", "Risk Score (Heuristic)": h1_s, "Threat Likelihood %": h1_p * 100},
+        {"Horizon": "+6h", "Risk Score (Heuristic)": h6_s, "Threat Likelihood %": h6_p * 100},
+        {"Horizon": "+24h", "Risk Score (Heuristic)": h24_s, "Threat Likelihood %": h24_p * 100}
     ]).set_index("Horizon")
     st.area_chart(timeline_chart_df, use_container_width=True)
 
