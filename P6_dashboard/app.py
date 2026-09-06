@@ -90,7 +90,7 @@ def load_lstm_world_model():
 def compute_lstm_forecast_drift(df, model, f_mean, f_std):
     """
     Computes real percent drift from trained PyTorch LSTM World Model rollouts.
-    Constructs 5 sequential temporal states from the uploaded telemetry,
+    Constructs 5 sequential temporal states using row-count-independent mean aggregation,
     normalizes using the training checkpoint stats (f_mean, f_std),
     performs recursive/iterative forecasting, denormalizes with (f_mean, f_std),
     and calculates:
@@ -104,54 +104,52 @@ def compute_lstm_forecast_drift(df, model, f_mean, f_std):
         f_std = np.array([69.6, 92.7, 195.2, 195.2], dtype=np.float32)
 
     n = len(df)
-    chunk_size = max(1, n // 5)
+    # Fixed temporal window size (20 flows per window for standard telemetry, or n // 5 for smaller captures)
+    w_size = max(1, min(20, n // 5))
 
-    # Standardize flow-level packets & bytes relative to upload (matching P1 preprocessing)
     p_mean = float(df["Packets"].mean()) if "Packets" in df else 10.0
     p_std = float(df["Packets"].std()) if "Packets" in df and df["Packets"].std() > 1e-4 else 1.0
     b_mean = float(df["Bytes"].mean()) if "Bytes" in df else 1000.0
     b_std = float(df["Bytes"].std()) if "Bytes" in df and df["Bytes"].std() > 1e-4 else 1.0
 
+    # Extract 5 sequential temporal states ending at latest telemetry using row-count-independent mean aggregation
     states = []
-    chunk_raw_pkts = []
+    chunk_mean_pkts = []
     for i in range(5):
-        chunk = df.iloc[i * chunk_size : (i + 1) * chunk_size] if i < 4 else df.iloc[i * chunk_size :]
-        c_len = max(len(chunk), 1)
-        scale = 1000.0 / c_len
+        start = max(0, n - (5 - i) * w_size)
+        end = n - (4 - i) * w_size
+        chunk = df.iloc[start:end]
 
-        pkts_raw = float(chunk["Packets"].sum()) if "Packets" in chunk else 10.0 * c_len
-        chunk_raw_pkts.append(pkts_raw)
+        pkts_m = float(chunk["Packets"].mean()) if "Packets" in chunk and len(chunk) > 0 else p_mean
+        bytes_m = float(chunk["Bytes"].mean()) if "Bytes" in chunk and len(chunk) > 0 else b_mean
+        chunk_mean_pkts.append(pkts_m)
 
-        # Standardized sum scaled to 1000-flow window (matching P2 temporal state construction)
-        pkts_norm_sum = float(((chunk["Packets"] - p_mean) / p_std).sum()) * scale if "Packets" in chunk else 0.0
-        bytes_norm_sum = float(((chunk["Bytes"] - b_mean) / b_std).sum()) * scale if "Bytes" in chunk else 0.0
-        u_src = float(chunk["Source_IP"].nunique()) * scale if "Source_IP" in chunk else 1.0 * scale
-        u_dst = float(chunk["Destination_IP"].nunique()) * scale if "Destination_IP" in chunk else 1.0 * scale
-        states.append([pkts_norm_sum, bytes_norm_sum, u_src, u_dst])
+        # Standardized mean mapped to model feature scale (1000-flow window representation)
+        pkts_z_scaled = ((pkts_m - p_mean) / p_std) * 1000.0
+        bytes_z_scaled = ((bytes_m - b_mean) / b_std) * 1000.0
+        u_src = float(chunk["Source_IP"].nunique()) if "Source_IP" in chunk and len(chunk) > 0 else 1.0
+        u_dst = float(chunk["Destination_IP"].nunique()) if "Destination_IP" in chunk and len(chunk) > 0 else 1.0
+        states.append([pkts_z_scaled, bytes_z_scaled, u_src, u_dst])
 
     seq = np.array(states, dtype=np.float32)
-    current_packet_count = max(chunk_raw_pkts[-1], 1e-5)
+    current_packet_count = max(chunk_mean_pkts[-1], 1e-5)
 
     # Normalize state sequence using training checkpoint stats (f_mean, f_std)
     norm_seq = (seq - f_mean) / f_std
-
     curr = norm_seq.copy()
     drifts = {}
-    last_c_len = max(len(df.iloc[4 * chunk_size :]), 1)
 
     with torch.no_grad():
         for step in range(1, 25):
             inp = torch.tensor(curr, dtype=torch.float32).unsqueeze(0)
             pred_state_norm, _ = model(inp)
             pred_norm = pred_state_norm.cpu().numpy()[0]
-
             curr = np.vstack([curr[1:], pred_norm])
 
             if step in [1, 6, 24]:
-                # Denormalize using training checkpoint stats (f_mean, f_std)
                 pred_actual = pred_norm * f_std + f_mean
-                # Map standardized predicted window sum back to upload packet scale
-                predicted_packet_count = (float(pred_actual[0]) / 1000.0 * last_c_len) * p_std + p_mean * last_c_len
+                # Row-count-independent denormalization back to mean packet count scale
+                predicted_packet_count = (float(pred_actual[0]) / 1000.0) * p_std + p_mean
                 drift_pct = (predicted_packet_count - current_packet_count) / current_packet_count * 100.0
                 drifts[f"+{step}h"] = f"{drift_pct:+.1f}% Packet Change"
 
