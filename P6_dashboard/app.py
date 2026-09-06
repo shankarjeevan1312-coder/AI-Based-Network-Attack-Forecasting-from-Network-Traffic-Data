@@ -1028,8 +1028,9 @@ if data is not None:
         <div class="gauge-box-3d">
             <div class="gauge-sub-lbl">Risk Classification</div>
             <div style="margin: 16px 0;"><span class="badge-neon {bc}">{rl}</span></div>
-            <div class="gauge-sub-lbl">Predicted Attack Probability</div>
+            <div class="gauge-sub-lbl">Estimated Attack Probability</div>
             <div class="gauge-num-3d" style="color: {gc}; font-size: 2.8rem;">{ap * 100:.0f}%</div>
+            <div class="gauge-sub-lbl" style="font-size: 0.72rem; color: #94a3b8;">Risk Engine (P4) Evaluation</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1040,6 +1041,7 @@ if data is not None:
             <div class="gauge-num-3d" style="color: #7b2ff7; font-size: 2.8rem;">{mc * 100:.0f}%</div>
             <div class="gauge-sub-lbl">PyTorch LSTM World Model</div>
             <div class="bar-track-3d"><div class="bar-fill-3d" style="width:{mc*100}%; background: linear-gradient(90deg, #7b2ff7, #7b2ff788);"></div></div>
+            <div class="gauge-sub-lbl" style="font-size: 0.72rem; color: #94a3b8; margin-top: 5px;">State Dynamics MSE: 0.077</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1047,6 +1049,7 @@ if data is not None:
 
     # Attack Stage Pipeline
     st.markdown("##### ⚔️ Attack Kill Chain Progression")
+    st.caption("ℹ️ Mapped via Risk Engine (P4) correlation between observed indicators and MITRE ATT&CK progression.")
     st.markdown(f"""
     <div class="pipeline-flow">
         <div class="node-chip node-curr">📍 Current Stage: {cs}</div>
@@ -1059,6 +1062,7 @@ if data is not None:
 
     # Dynamic Forecast Timeline
     st.markdown("##### 📅 Multi-Horizon Forecast Timeline")
+    st.caption("ℹ️ Horizon probabilities evaluated by the Dynamic Risk Engine (P4) across LSTM forward state trajectories.")
     st.dataframe(pd.DataFrame(dynamic_timeline), use_container_width=True, hide_index=True)
 
     timeline_chart_df = pd.DataFrame([
